@@ -209,13 +209,13 @@ def plot_T_dist(fitdate, dfpdf, q5loc_raw, q5loc_shocked, horizon):
 
     if yvals_raw[q5loc_raw]>yvals_shocked[q5loc_raw]:
         ax.fill_between(x_list[:q5loc_raw], 0, yvals_raw[:q5loc_raw],  facecolor='c', interpolate=True)
-        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='r', interpolate=True)
+        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='g', interpolate=True)
     else:
-        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='r', interpolate=True)
+        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='g', interpolate=True)
         ax.fill_between(x_list[:q5loc_raw], 0, yvals_raw[:q5loc_raw],  facecolor='c', interpolate=True)
         
     ax.plot(x_list,yvals_raw,'c-',label=lablestr_raw)
-    ax.plot(x_list,yvals_shocked,'r-',label=lablestr_shocked)
+    ax.plot(x_list,yvals_shocked,'g-',label=lablestr_shocked)
     ax.legend(fontsize=24)
     ax.tick_params(labelsize=24)
     plt.ylim(0, max(max(yvals_raw),max(yvals_shocked))*1.2)
@@ -237,13 +237,13 @@ def plot_asymt_T_dist(fitdate, dfpdf, q5loc_raw, q5loc_shocked, horizon):
 
     if yvals_raw[q5loc_raw]>yvals_shocked[q5loc_raw]:
         ax.fill_between(x_list[:q5loc_raw], 0, yvals_raw[:q5loc_raw],  facecolor='c', interpolate=True)
-        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='r', interpolate=True)
+        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='g', interpolate=True)
     
     else:
-        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='r', interpolate=True)
+        ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='g', interpolate=True)
         ax.fill_between(x_list[:q5loc_raw], 0, yvals_raw[:q5loc_raw],  facecolor='c', interpolate=True) 
     ax.plot(x_list,yvals_raw,'c-',label=lablestr_raw)
-    ax.plot(x_list,yvals_shocked,'r-',label=lablestr_shocked)
+    ax.plot(x_list,yvals_shocked,'g-',label=lablestr_shocked)
     ax.legend(fontsize=24)
     ax.tick_params(labelsize=24)
     plt.ylim(0, max(max(yvals_raw),max(yvals_shocked))+0.2)
