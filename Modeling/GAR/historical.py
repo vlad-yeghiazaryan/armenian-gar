@@ -9,7 +9,8 @@ from .tsfit import asymt_pdf
 from .tsfit import asymt_cdf
 from .tsfit import asymt_ppf
 from .tsfit import tskew_fit
-from .tsfit import asymt_fit, tskew_ppf_vec, gen_PDF_and_CDF, gen_asymt_PDF_and_CDF, asymt_ppf_vec, get_cond_quant
+from .tsfit import asymt_fit, tskew_ppf_vec, gen_t_PDF_and_CDF, gen_asymt_PDF_and_CDF, asymt_ppf_vec, get_cond_quant
+from .tsfit import quantile_uncrossing, Weighted_kernel, gen_kernel_values
 
 # Plotting
 import matplotlib.pyplot as plt
@@ -18,16 +19,6 @@ from math import log
 
 # Function for step 4: historical test
 def run_historical(dict_input_historical, data, qcoef):
-    '''
-    Main run function for step 2, quantfit.
-
-    Takes in as arguments a dict for input parameters
-    and a df for data. Outputs a dict for output parameters.
-
-    Does quantile fits and returns a dict of output parameters.
-    ** This function should be independent of any Excel input/output
-    and be executable as a regular Python function independent of Excel. **
-    '''
     # ------------------------
     # Create output dict
     # ------------------------
@@ -40,7 +31,7 @@ def run_historical(dict_input_historical, data, qcoef):
     fitparam=dict_input_historical['fit_params']
 
     dates, realvalues, olsmeans, cond_quants = get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitparam)
-    figs, res, chartpacks = historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans)
+    figs, res, chartpacks = historical_gen(cond_quants, fitparam, realvalues, olsmeans, dates, horizon)
     df=pd.DataFrame(res, index=dates)
     cond_quants = pd.DataFrame(cond_quants, index=dates)
     dict_output_historical['figs'] = figs
@@ -75,7 +66,7 @@ def get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitpar
     fitted_dates = np.array(fitted_dates)
     return fitted_dates, realvalues, olsmeans, cond_quants
 
-def historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans):
+def historical_gen(cond_quants, fitparam, realvalues, olsmeans, dates, horizon):
     n = len(cond_quants)
     n_charts=10
     draws=list(range(n))
@@ -89,6 +80,9 @@ def historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans):
         res, asfits = get_hist_asymt_dist(cond_quants, fitparam, olsmeans)
         figs, chartpacks = plot_hist_asymt_dist(dates, res, asfits, realvalues, draws)
         return figs, res, chartpacks
+    elif fitparam['fittype']=='Kernel-based':
+        res = get_hist_kernel_dist(cond_quants, fitparam, dates, horizon)
+        return {}, res, []
 
 def get_hist_T_dist(cond_quants, fitparam):
     res = []
@@ -101,7 +95,7 @@ def get_hist_T_dist(cond_quants, fitparam):
         tsfits.append(tsfit)
     
     # select a fixed x_list 
-    x_list = select_x_list(tsfits)
+    x_list = select_t_x_list(tsfits)
 
 # ToDo: !!! this code/for loop takes too long to run !!!
     for tsfit in tsfits:
@@ -112,7 +106,7 @@ def get_hist_T_dist(cond_quants, fitparam):
             'skew': tsfit['skew']
         }
         # store PDF and CDF
-        res_fit['dfpdf'] = gen_PDF_and_CDF(tsfit, x_list)
+        res_fit['dfpdf'] = gen_t_PDF_and_CDF(tsfit, x_list)
 
         # store values for different tails
         quantiles.append(0.05) if 0.05 not in quantiles else None
@@ -317,7 +311,28 @@ def plot_hist_asymt_dist(dates, res, asfits, realvalues, draws):
     plt.close('all')
     return figs, chartpacks
 
-def select_x_list(tsfits):
+def get_hist_kernel_dist(cond_quants, fitparam, dates, horizon):
+    res = []
+    kfits =[]
+    h = fitparam['mode']['bandwidth']
+
+    # perform fitting for  kernel model 
+    for cond_quant in cond_quants:
+        cond_quant_uncross = quantile_uncrossing(cond_quant)
+        kfit = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+        kfit.w_kernel_fit()
+        kfits.append(kfit)
+    
+    # select a fixed x
+    x = select_kernel_x_list(kfits)
+
+    for kfit, fitdate in zip(kfits, dates):
+        res_fit, dfpdf = gen_kernel_values(fitdate, horizon, kfit, x)
+        res_fit['dfpdf'] = dfpdf
+        res.append(res_fit)
+    return res
+
+def select_t_x_list(tsfits):
     loclist = [tsfit['loc'] for tsfit in tsfits]
     min_v = min(loclist)-8
     max_v = max(loclist)+8
@@ -348,4 +363,35 @@ def select_asymt_x_list(asymtfits):
         min_v = min(min_v,v_q15-abs(v_q15-v_q40))
         max_v = max(max_v,v_q85+abs(v_q85-v_q60))
     x_list = [x for x in np.arange(min_v,max_v,0.05)]
+    return x_list
+
+def select_kernel_x_list(kfits):
+    # estimate the mean for each period
+    meanlist = []
+    for kfit in kfits:
+        x = kfit.q_values
+        ypdf = kfit.w_kernel_pdf(x)
+        meanx = (x @ ypdf)/np.sum(ypdf)
+        meanlist.append(meanx)
+
+    # set initial values
+    min_v = min(meanlist)-8
+    max_v = max(meanlist)+8
+
+    for kfit in kfits:
+        v_q15, v_q40, v_q60, v_q85 = kfit.w_kernel_ppf(np.array([0.15, 0.4, 0.6, 0.85]))
+
+        # increase the range if some quantiles are outside
+        min_v = min(min_v,v_q15-abs(v_q15-v_q40))
+        max_v = max(max_v,v_q85+abs(v_q85-v_q60))
+    x_list = np.array([x for x in np.linspace(min_v,max_v,500)])
+    return x_list
+
+def select_x_list(model_fits, fittype):
+    if fittype=='T-skew':
+        x_list = select_t_x_list(model_fits)
+    elif fittype=='Asymmetric T':
+        x_list = select_asymt_x_list(model_fits)
+    elif fittype=='Kernel-based':
+        x_list = select_kernel_x_list(model_fits)
     return x_list

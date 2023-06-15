@@ -6,9 +6,12 @@ from scipy.stats import t, norm
 from scipy import interpolate
 from scipy.special import gamma
 from scipy.optimize import minimize
-import math 
+import math
 import warnings
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
+
+# Internal modules
+from .kernel import Weighted_kernel
 
 import matplotlib.pyplot as plt  
 from matplotlib.ticker import FormatStrFormatter
@@ -34,10 +37,6 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
 
     # Estimation
     res, cq, fig, fig2, dfpdf = gen_skewt(fitdate, fitparam, cond_quant, horizon)
-    if fitparam['fittype']=='Asymmetric T':
-        dfpdf=dfpdf[['AsymT_PDF_x','AsymT_CDF','AsymT_PDF_y']].round(decimals=5)
-    elif fitparam['fittype']=='T-skew':
-        dfpdf=dfpdf[['Tskew_PDF_x','Tskew_CDF','Tskew_PDF_y']].round(decimals=5)
     dict_output_tsfit['result'] = res
     dict_output_tsfit['data']   = cq
     dict_output_tsfit['fig']    = fig
@@ -89,7 +88,7 @@ def gen_skewt(fitdate, fitparam, cond_quant, horizon):
         tsfit = tskew_fit(cond_quant,fitparam)
 
         # generating data for PDF and CDF
-        dfpdf = gen_PDF_and_CDF(tsfit)
+        dfpdf = gen_t_PDF_and_CDF(tsfit)
 
         # calc some variables
         xq5=tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) 
@@ -160,23 +159,89 @@ def gen_skewt(fitdate, fitparam, cond_quant, horizon):
             'Skewness': asymtfit['skew']
         }
         return res, cq, fig, fig2, dfpdf
+    elif fitparam['fittype']=='Kernel-based':
+        res, fig, fig2, dfpdf = gen_kernel_fit(cond_quant, fitparam, fitdate, horizon)
+        return res, cq, fig, fig2, dfpdf
 
-def gen_PDF_and_CDF(tsfit, x_list=None):
-    v_q5 = tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q40 = tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q60 = tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q95 = tskew_ppf(0.95, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    min_v = v_q5-abs(v_q5-v_q40)
-    max_v = v_q95+abs(v_q95-v_q60)
-    while tskew_cdf(min_v+1, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])>0.05:
-        min_v-=1
-    
+def gen_kernel_fit(cond_quant, fitparam, fitdate, horizon):
+    res, dfpdf = kernel_fit(cond_quant, fitparam, fitdate, horizon)
+
+    # plotting
+    fig, fig2 = plot_kernel_dist(fitdate, horizon, fitparam, res['kernel_model'], dfpdf)
+    return res, fig, fig2, dfpdf
+
+def kernel_fit(cond_quant, fitparam, fitdate, horizon, x_values=None):
+    # perform the kernel model fit
+    h = fitparam['mode']['bandwidth']
+    cond_quant_uncross = quantile_uncrossing(cond_quant)
+    kernel_model = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+    kernel_model.w_kernel_fit()
+    res, dfpdf = gen_kernel_values(fitdate, horizon, kernel_model, x_values)
+    return res, dfpdf
+
+def gen_kernel_values(fitdate, horizon, kernel_model, x_values=None):
+    # generating data for PDF and CDF
+    dfpdf = gen_kernel_PDF_and_CDF(kernel_model, x_values)
+
+    # calc some variables
+    x, ypdf, ycdf = dfpdf.values.T
+    xq5 = kernel_model.w_kernel_ppf(0.05)
+    xq10 = kernel_model.w_kernel_ppf(0.1)
+    medx = kernel_model.w_kernel_ppf(0.5)
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    modx = x[np.argmax(ypdf)]
+
+    # save the results
+    res = {
+        'Date of input': fitdate,
+        'Horizon forward': horizon,
+        'Conditional mode': modx,
+        'Conditional median': medx,
+        'Conditional mean': meanx,
+        'GaR5%': xq5,
+        'GaR10%': xq10,
+        'kernel_weights':kernel_model.w_hat,
+        'kernel_bandwidth':kernel_model.bandwidth,
+        'kernel_model':kernel_model
+    }
+    return res, dfpdf
+
+def gen_kernel_PDF_and_CDF(kernel_model, x=None):
+    if type(x)==type(None):
+        v_q1, v_q5, v_q40, v_q60, v_q95, v_q99 = kernel_model.w_kernel_ppf(np.array([0.01, 0.05, 0.4, 0.6, 0.95, 0.99]))
+        min_v = max(v_q5-abs(v_q5-v_q40), v_q1)
+        max_v = min(v_q95+abs(v_q95-v_q60), v_q99)
+        x = np.array([x for x in np.linspace(min_v,max_v,500)])
+    density_hat = kernel_model.w_kernel_pdf(x)
+    theta_hat = kernel_model.w_kernel_cdf(x)
+    dfpdf = pd.DataFrame({'Kernel_PDF_x':x, 'Kernel_PDF_y':density_hat,
+                          'Kernel_CDF_y':theta_hat})
+    return dfpdf
+
+def gen_t_PDF_and_CDF(tsfit, x_list=None):
     if type(x_list)==type(None):
+        v_q5 = tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q40 = tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q60 = tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q95 = tskew_ppf(0.95, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        min_v = v_q5-abs(v_q5-v_q40)
+        max_v = v_q95+abs(v_q95-v_q60)
+        while tskew_cdf(min_v+1, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])>0.05:
+            min_v-=1
         x_list = [x for x in np.arange(min_v,max_v,0.05)]
     yvals = [tskew_pdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]    
     ycdf = [tskew_cdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]
     tmp_dic={'Tskew_PDF_x':x_list,'Tskew_PDF_y':yvals,'Tskew_CDF':ycdf}
     dfpdf = pd.DataFrame(tmp_dic)
+    return dfpdf
+
+def gen_PDF_and_CDF(model_fit, fitparam, x_list=None, loc=None):
+    if fitparam['fittype']=='T-skew':
+        dfpdf = gen_t_PDF_and_CDF(model_fit, x_list)
+    elif fitparam['fittype']=='Asymmetric T':
+        dfpdf = gen_asymt_PDF_and_CDF(model_fit, loc, x_list)
+    elif fitparam['fittype']=='Kernel-based':
+        dfpdf = gen_kernel_PDF_and_CDF(model_fit, x_list)
     return dfpdf
 
 def tskew_ppf_vec(quantiles, tsfit):
@@ -429,6 +494,131 @@ def plot_asymt_T_dist(fitdate, dfpdf, fitparam, asymtfit, loc, horizon):
     plt.xlim(x_list[0],x_list[-1])
     plt.ylabel('Cumulative Probability', fontsize=24)
     plt.xlabel('GDP (compound annual growth rate)', fontsize=24)
+    plt.close('all')
+    return fig, fig2
+
+def plot_kernel_dist(fitdate, horizon, fitparam, kernel_model, dfpdf):
+    # setting plot inputs
+    x, ypdf, ycdf = dfpdf.values.T
+    xq5, xq10, xq40 = kernel_model.w_kernel_ppf(np.array([0.05, 0.1, 0.4]))
+    yq5, yq10 = kernel_model.w_kernel_pdf(np.array([xq5, xq10]))
+    ycq5, ycq10 = kernel_model.w_kernel_cdf(np.array([xq5, xq10]))
+    q5loc = np.argmin(np.abs(ycdf - 0.05))
+    x_inc = (xq40-xq5)/4
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    meany = kernel_model.w_kernel_pdf(meanx)
+    meancy = kernel_model.w_kernel_cdf(meanx)
+    medx = kernel_model.w_kernel_ppf(0.5)
+    medy = kernel_model.w_kernel_pdf(medx)
+    modx = x[np.argmax(ypdf)]
+    mody = kernel_model.w_kernel_pdf(modx)
+    modcy = kernel_model.w_kernel_cdf(modx)
+
+    # plot text inputs
+    titlestr = "Kernel fit for "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+    lablestr = "Density "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+
+    # plotting
+    fig, ax = plt.subplots(1, 1, figsize=(20,10))
+    ax.set_ylim(0, 1.2 * max(ypdf))
+    ax.set_title(titlestr,fontsize=24)
+    ax.fill_between(x[:q5loc], 0, ypdf[:q5loc],  facecolor='red', interpolate=True)
+    ax.plot(x, ypdf,'b-',label=lablestr)
+
+    # adding mode to plot
+    if fitparam['plot_mode']:
+        ax.plot([modx, modx],[0,mody],'r-.')
+        ax.annotate('Mode', xy=(modx, mody),xycoords='data',
+                    xytext=(modx+x_inc, mody*1.2), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24)
+    
+    # adding median to plot
+    if fitparam['plot_median']:
+        ax.plot([medx,medx],[0,medy],'m-.')
+        if medx<modx:
+            sp=-x_inc
+        else:
+            sp=x_inc
+        ax.annotate('Median', xy=(medx, medy),xycoords='data',
+                    xytext=(medx+sp, mody*1.1), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24,)
+        
+    # adding mean to the plot
+    if fitparam['plot_mean']:
+        if meanx<modx:
+            sp=-x_inc
+        else:
+            sp=x_inc
+        ax.plot([meanx,meanx],[0,meany],'c-.')
+        ax.annotate('Mean', xy=(meanx, meany),xycoords='data',
+                    xytext=(meanx+sp, meany*1.1), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24,)
+
+    # Show GaR 5%
+    ax.plot([xq5,xq5],[0,yq5],'k--')
+    
+    ax.annotate('GaR 5%', xy=(xq5, yq5), xycoords='data',
+                xytext=(xq5-x_inc, yq5*1.4), textcoords='data',
+                arrowprops=dict(arrowstyle="->",
+                                connectionstyle="angle3,angleA=90,angleB=0"),fontsize=24)
+    # Show GaR 10%
+    ax.plot([xq10,xq10],[0,yq10],'k--')
+    ax.annotate('GaR 10%', xy=(xq10, yq10), xycoords='data',
+                xytext=(xq10-x_inc, yq10*1.3), textcoords='data',
+                arrowprops=dict(arrowstyle="->",
+                connectionstyle="angle3,angleA=0,angleB=90"),fontsize=24)
+    
+    # plot formatting
+    ax.legend(fontsize=24)
+    ax.tick_params(labelsize=24)
+    plt.ylim(0, max(ypdf)*1.4)
+    plt.xlim(x[0],x[-1])
+    
+    # adding axis titles
+    plt.ylabel('Probability Density', fontsize=24)
+    plt.xlabel('GDP (compound annual growth rate)', fontsize=24)
+    
+    # Creating the CDF plot
+    fig2, ax2 = plt.subplots(1, 1, figsize=(20,10))
+
+    # plot text inputs
+    lablestr = "Cumulative probability "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+
+    # plotting
+    ax2.fill_between(x[:q5loc+1], 0, ycdf[:q5loc+1],  facecolor='red', interpolate=True)
+    ax2.plot([xq5,xq5],[0,ycq5],'k--')
+    ax2.plot([xq10,xq10],[0,ycq10],'k--')
+    ax2.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    
+    # adding mode, median and mean
+    if fitparam['plot_mode']:
+        ax2.plot([modx,modx],[0,modcy],'r-.')
+        ax2.plot([x[0],modx],[modcy,modcy],'r-.')
+        
+    if fitparam['plot_median']:
+        ax2.plot([medx,medx],[0,0.5],'m-.')
+        ax2.plot([x[0],medx],[0.5,0.5],'m-.')
+    
+    if fitparam['plot_mean']:
+        ax2.plot([meanx,meanx],[0,meancy],'c-.')
+        ax2.plot([x[0],meanx],[meancy,meancy],'c-.')
+    
+    # plot formatting
+    ax2.set_ylim(0, 1)
+    ax2.set_title(titlestr,fontsize=24)        
+    ax2.plot(x,ycdf,'b-',label=lablestr)
+    ax2.legend(fontsize=24,loc=2)
+    ax2.tick_params(labelsize=24)
+    plt.ylim(0, 1)
+    plt.xlim(x[0],x[-1])
+
+    # plot text inputs
+    plt.ylabel('Cumulative Probability', fontsize=24)
+    plt.xlabel('GDP(compound annual growth rate)', fontsize=24)
+
     plt.close('all')
     return fig, fig2
 

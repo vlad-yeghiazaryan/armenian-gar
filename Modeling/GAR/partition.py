@@ -924,7 +924,6 @@ def cum_gr(series, horizon ,yearfreq=4):
     annual_cagr = ((1+cagr)**yearfreq) -1
     return(100*annual_cagr)
 
-
 def yoy_gr(series, horizon, yearfreq=4): 
     ## We assume that the growth rate is quarterly. In the future, rather than having +4, should use an index period
     yoy_gr = (series.shift(-horizon)/series.shift(-horizon+yearfreq))-1

@@ -7,9 +7,7 @@ from sklearn.preprocessing import scale
 import statsmodels.api as sm
 from statsmodels.api import QuantReg
 
-###############################################################################
-#Functions for step 2: quantfit
-###############################################################################
+# Functions for step 2: quantfit
 def run_quantfit(data, target, horizon=4, model=QuantReg,
                  quantlist=[0.1, 0.25, 0.5, 0.75, 0.9]):
     '''
@@ -39,16 +37,16 @@ def run_quantfit(data, target, horizon=4, model=QuantReg,
     # ------------------------
     # Run the quantfit
     # ------------------------
-    qcoeff_all, dcond_quantiles_all, loco_all, exitcode = condquant(df_quantfit, depvar, regressors, horizon, quantlist, model)
+    qcoeff, cond_quant, local_prj, exitcode = condquant(df_quantfit, depvar, regressors, horizon, quantlist, model)
 
     # Add return values
-    dict_output_quantfit['qcoef']      = qcoeff_all
-    dict_output_quantfit['cond_quant'] = dcond_quantiles_all
-    dict_output_quantfit['localprj']    = loco_all
+    dict_output_quantfit['qcoef']      = qcoeff
+    dict_output_quantfit['cond_quant'] = cond_quant
+    dict_output_quantfit['localprj']    = local_prj
     
     return dict_output_quantfit
 
-def condquant(dall,depvar,regressors_avl,horizon,ql, model):
+def condquant(dall, depvar,regressors_avl, horizon, ql, model):
 #if 1==1:    
     ql.sort()
     c_id_dict = {'horizon' : horizon}
@@ -90,9 +88,7 @@ def add_id(df, id_dict):
         df.insert(v, var, id_dict[var])
     return(df)
 
-###############################################################################
 # Run the quantiles regressions
-###############################################################################
 class QuantileReg(object):
     """ 
     Fit a conditional regression model, via quantile regressions
@@ -234,6 +230,4 @@ class QuantileReg(object):
         cq = pd.concat([cond_quantiles, dm])
 
         return(cq)
-
-
 

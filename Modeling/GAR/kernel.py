@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.stats import norm
-from scipy.optimize import minimize
+from scipy.optimize import minimize, root
 
+# Weighted_kernel_interpolation
 class Weighted_kernel:
     """
     A class for performing weighted kernel interpolation for estimating conditional quantiles.
@@ -42,8 +43,14 @@ class Weighted_kernel:
             # adding special constraint for sum(w)=1
             self.cons = {'type':'eq', 'fun': self.const}
 
-    # weighted_kernel_interpolation
-    def w_kernel_cdf(self, x, w):
+    def _w_kernel_cdf(self, x, w):
+        q = self.q_values
+        h = self.h
+        quant_hats = norm.cdf((x[:, np.newaxis]-q) / h)
+        theta_hat = quant_hats @ w
+        return theta_hat
+
+    def w_kernel_cdf(self, x):
         """
         Computes the weighted kernel estimate of the cumulative distribution function (CDF) for the given input value(s). The interpolation is performed using the observed conditional quantiles and their weights.
 
@@ -51,18 +58,15 @@ class Weighted_kernel:
         ----------
         x : scalar, array-like
             The input value(s) for which the CDF estimate is computed. If a scalar, a single CDF estimate is returned. If an array-like object, an array of CDF estimates is returned.
-
-        w : array-like
-            The weights for the observed conditional quantiles. The length of the weights array should be the same as the number of observed quantiles.
         
         Returns
         -------
         theta_hat : scalar or ndarray
             The estimated quantile(s) corresponding to the input value(s). If a scalar input is given, a single quantile is returned. If an array-like input is given, an array of quantiles is returned.
         """
-
         q = self.q_values
         h = self.h
+        w = self.w_hat
         if np.isscalar(x):
             quant_hats = norm.cdf((x-q) / h)
         else:
@@ -70,7 +74,7 @@ class Weighted_kernel:
         theta_hat = quant_hats @ w
         return theta_hat
 
-    def w_kernel_pdf(self, x, w):
+    def w_kernel_pdf(self, x):
         """
         Computes the weighted kernel estimate of the probability density function (PDF) for the given input value(s). The interpolation is performed using the observed conditional quantiles and their weights.
 
@@ -78,9 +82,6 @@ class Weighted_kernel:
         ----------
         x : scalar, array-like
             The input value(s) for which the PDF estimate is computed. If a scalar, a single PDF estimate is returned. If an array-like object, an array of PDF estimates is returned.
-
-        w : array-like
-            The weights for the observed conditional quantiles. The length of the weights array should be the same as the number of observed quantiles.
         
         Returns
         -------
@@ -89,6 +90,7 @@ class Weighted_kernel:
         """
         q = self.q_values
         h = self.h
+        w = self.w_hat
         if np.isscalar(x):
             quant_hats = norm.pdf((x-q) / h)
         else:
@@ -96,14 +98,33 @@ class Weighted_kernel:
         theta_hat = (quant_hats @ w) / h
         return theta_hat
     
+    def guess_ppf(self, theta):
+        is_scalar = np.isscalar(theta)
+        if is_scalar:
+            theta = np.array([theta])
+        neighbour_indices = np.argsort(np.abs(theta[:, np.newaxis] - self.theta))[:, :2]
+        slopes = (np.diff(self.q_values[neighbour_indices]) / np.diff(self.theta[neighbour_indices])).reshape(-1)
+        intercepts = self.q_values[neighbour_indices][:, 0] - self.theta[neighbour_indices][:, 0] * slopes
+        q_values = intercepts + theta * slopes
+        if is_scalar:
+            q_values = q_values[0]
+        return q_values
+        
+    def w_kernel_ppf(self, theta):
+        q_guess = self.guess_ppf(theta)
+        if np.isscalar(theta):
+            return root(lambda x: self.w_kernel_cdf(x) - theta, q_guess)['x'][0]
+        else:
+            return root(lambda x: self.w_kernel_cdf(x) - theta, q_guess)['x']
+
     def w_kernel_loss(self, w):
         theta = self.theta
         q = self.q_values
-        theta_hat = self.w_kernel_cdf(q, w)
+        theta_hat = self._w_kernel_cdf(q, w)
         main_loss = np.sum(np.power(theta - theta_hat, 2))
         total_loss = main_loss
         return total_loss
-    
+   
     @staticmethod
     def const(x):
         return x.sum() - 1
@@ -114,7 +135,6 @@ class Weighted_kernel:
         ret[n:] = ret[n:] - ret[:-n]
         return ret[n - 1:] / n
 
-    
     def quantile_std(self, theta, q):
         density = np.diff(theta)/np.diff(q)
         norm_density = density/np.sum(density)
@@ -128,4 +148,5 @@ class Weighted_kernel:
                        method='SLSQP', bounds=[(0, None)],
                        constraints=self.cons, 
                        options={'maxiter':100})
-        return res.x
+        self.w_hat = res.x
+        return self.w_hat
