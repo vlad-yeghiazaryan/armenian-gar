@@ -14,6 +14,42 @@ from scipy.stats import t, norm
 from scipy.special import gamma
 from scipy import interpolate, pi
 
+# utils
+from tqdm.notebook import tqdm
+
+def gen_scenario_horizons(y_horizons, scenarios, quantlist, horizonlist, 
+                          dates, fit_params, methods, qReg_model):
+    res_fits = []
+    qcoeff_horizons = []
+    for horizon, y in tqdm(list(zip(horizonlist, y_horizons))):
+        for scenario_name, scenario_data in scenarios.items():
+            # running quantile reg (Q-fit) 16x2x37 (horizon-scenario-quantiles)
+            qcoeff, cond_quant = qRegFit(y, scenario_name, scenario_data, 
+                                         quantlist, horizon, qReg_model)
+            # Subset selection 16x2x37x77 (horizon-scenario-quantiles-dates)
+            # distributional model fit for conditional quantiles  16x2x77x3 (horizon-scenario-dates-methods)
+            cond_quant_method_fits = cond_quant_fits(dates, scenario_data, 
+                                                     qcoeff, fit_params, methods)
+            res_fits.append(cond_quant_method_fits)
+            qcoeff_horizons.append(qcoeff)
+            
+    # combine horizon-scenario-qfits into qfits
+    res_fits = [res_fit for method_fits in res_fits for res_fit in method_fits]
+    # extract the fits for all horizons and scenarios and select fixed x values
+    model_fits = [res_fit['model_fit'] for res_fit in res_fits]
+    methods = [res_fit['method'] for res_fit in res_fits]
+    x = select_x_list(model_fits, methods)
+    
+    # get dfpdf using a fixed set for x
+    for res_fit in tqdm(res_fits):
+        model_fit = res_fit['model_fit']
+        loc = res_fit['modx']
+        method = res_fit['method']
+        res_fit['dfpdf'] = gen_PDF_and_CDF(model_fit, method, x, loc)
+    res_fits = pd.DataFrame(res_fits)
+    qcoeff_horizons = pd.concat(qcoeff_horizons)
+    return res_fits, qcoeff_horizons
+
 def cond_quant_fits(dates, data, qcoeff, fit_params, methods):
     horizon = qcoeff['horizon'].iloc[0]
     scenario = qcoeff['scenario'].iloc[0]
@@ -214,7 +250,7 @@ class QuantileReg(object):
         for tau in self.quantile_list:
             y = self.data[self.depvar]
             X = sm.add_constant(self.data[self.regressors])
-            qfit = self.QModel(y, X).fit(q=tau, max_iter=4000, p_tol=1e-05)
+            qfit = self.QModel(y, X).fit(q=tau, max_iter=5000, p_tol=1e-05)
 
             qfit_dict[tau] = qfit
         return(qfit_dict)
