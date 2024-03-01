@@ -34,11 +34,12 @@ def run_scenario(fitdate, cond_quant_raw, cond_quant_shocked, fitparam, fitparam
     return dict_output_scenario
 
 # Calculate shock relations
-def gen_relation(shockdict, partition_groups, original_data, df_partition):
+def gen_relation(shockdict, partition_groups, original_data, df_partition, target):
     df_shockedvar = pd.DataFrame(index=original_data.index)
     df_shockedgrp = df_partition.copy()
     for group in df_shockedgrp.columns:
-        df_shockedgrp[group+'_shocked']=df_shockedgrp[group]
+        if group not in ['date', target]:
+            df_shockedgrp[group+'_shocked']=df_shockedgrp[group]
     for var, shock in shockdict.items():
         ct=0
         if shock['shocktype']=='By +/- STD':
@@ -85,22 +86,26 @@ def gen_relation(shockdict, partition_groups, original_data, df_partition):
             print(var+' not in any group.')
     return df_shockedvar, df_shockedgrp
 
-def gen_shocked_PCA(shockvars, partition_groups, original_data, transformer, target, horizon=4, method_growth='cpd', retropolate='Yes'):
+def gen_shocked_PCA(shockvars, partition_groups, original_data, transformer, target, horizon=4, method_growth='cpd', method='PCA', benchcutoff=0.2):
     # perform PCA
-    df_partition, partition_load, partition_log = retropolated_PCA(original_data, partition_groups, target, horizon, method_growth, retropolate)
+    df_partition, partition_load = retropolated_PCA(original_data, partition_groups, target, horizon, method_growth, method, benchcutoff)
 
     # generate some shocks
-    df_shockedvar, df_shockedgrp = gen_relation(shockvars, partition_groups, original_data, df_partition)
+    df_shockedvar, df_shockedgrp = gen_relation(shockvars, partition_groups, original_data, df_partition, target)
+    
+    # select the shocked columns only
+    shock_cols = [c for c in df_shockedgrp.columns if (c not in df_partition.columns) or (c in ['date', target])]
+    df_shockedgrp = df_shockedgrp[shock_cols].copy()
 
-    # apply transformations after shock generation
-    depvar  = target + '_hz_' + str(horizon)
-    transformer.mapping = {c:c+'_shocked' for c in list(transformer.mapping.keys()) + list(partition_groups.keys())}
-    df_shockedgrp = transformer.transform(df_shockedgrp, depvar)
+    if type(transformer)!=type(None):
+        # apply transformations after shock generation
+        transformer.mapping = {c:c+'_shocked' for c in list(transformer.mapping.keys()) + list(partition_groups.keys())}
+        df_shockedgrp = transformer.transform(df_shockedgrp, target)
 
-    # selected shocked columns
-    com_cols = list(set(transformer.mapping.values()) & set(df_shockedgrp.columns))
-    df_shockedgrp = df_shockedgrp[['date']+com_cols]
-    transformer.mapping = {c:c for c, s in transformer.mapping.items()}
+        # selected shocked columns
+        com_cols = list(set(transformer.mapping.values()) & set(df_shockedgrp.columns))
+        df_shockedgrp = df_shockedgrp[['date']+com_cols]
+        transformer.mapping = {c:c for c, s in transformer.mapping.items()}
 
     # set index for shockvar
     df_shockedvar.index = original_data['date']

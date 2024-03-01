@@ -22,7 +22,7 @@ def run_historical(dict_input_historical, data, qcoef):
     # ------------------------
     # Create output dict
     # ------------------------
-    dict_output_historical = dict()
+    dict_output_historical = {}
     target = dict_input_historical['target']
     horizon = dict_input_historical['horizon']
     sdate=dict_input_historical['start_date']
@@ -42,8 +42,7 @@ def run_historical(dict_input_historical, data, qcoef):
 
 def get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitparam):
     # selected the dates for estimating conditional quantiles
-    depvar  = target + '_hz_' + str(horizon)
-    y = data.set_index('date')[depvar]
+    y = data.set_index('date')[target]
     dates = data['date'][(data['date']>=sdate) & (data['date']<=edate)]
     dates = dates.iloc[list(range(0,len(dates),time_inc))].values
     

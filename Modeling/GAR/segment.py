@@ -4,6 +4,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 # Internal modules
+from .growth import calc_growth_rate
 from .partition import retropolated_PCA
 from .quantfit import condquant
 from .tsfit import get_cond_quant, tskew_fit, asymt_fit
@@ -16,9 +17,10 @@ def run_segment(dict_input_segment, data, model=sm.QuantReg):
     # input definitions:
     # PCA inputs
     horizonlist = dict_input_segment['horizonlist']
-    target =  dict_input_segment['target']
+    base_target =  dict_input_segment['base_target']
     method_growth = dict_input_segment['method_growth']
-    retropolate = dict_input_segment['retropolate']
+    method = dict_input_segment['method']
+    benchcutoff = dict_input_segment['benchcutoff']
     dict_groups = dict_input_segment['partition_groups']
     transformer = dict_input_segment['transformer']
     df_partition = data.copy()
@@ -36,18 +38,19 @@ def run_segment(dict_input_segment, data, model=sm.QuantReg):
     
     # Run horizons
     for indh, horizon in enumerate(horizonlist):
-        # Variable setup
-        depvar  = target + '_hz_' + str(horizon)
-
         # PCA fit
-        df_quantfit, partition_load, partition_log = retropolated_PCA(df_partition, dict_groups, target, horizon=horizon, method_growth=method_growth, retropolate=retropolate)
+        target = base_target+'_hz_'+str(horizon)
+        df_partition[target] = calc_growth_rate(df_partition[base_target], horizon=horizon, yearfreq=4, method_growth=method_growth)
+       
+        df_quantfit, partition_load = retropolated_PCA(df_partition, dict_groups, target, horizon, method_growth, method, benchcutoff)
 
         # Data transformation
-        df_quantfit = transformer.transform(df_quantfit, depvar)
-        regressors = df_quantfit.drop(columns=['date', depvar]).columns
+        if type(transformer)!=type(None):
+            df_quantfit = transformer.transform(df_quantfit, target)
         
         # Q-fit
-        df_quantcoef, dcond_quantiles_all, loco_all, exitcode = condquant(df_quantfit.set_index('date'), depvar, regressors, horizon, qlist, model)
+        regressors = df_quantfit.drop(columns=['date', target]).columns
+        df_quantcoef, dcond_quantiles_all, loco_all, exitcode = condquant(df_quantfit.set_index('date'), target, regressors, horizon, qlist, model)
 
         # Subset selection
         period = fitparam['qsmooth_period'] if type(fitparam['qsmooth_period'])!=str else horizon

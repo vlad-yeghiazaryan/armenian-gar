@@ -27,16 +27,13 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
     ** This function should be independent of any Excel input/output
     and be executable as a regular Python function independent of Excel. **
     '''
-    # ------------------------
-    # Create output dict
-    # ------------------------
-    dict_output_tsfit = dict()
 
     # Param setup
     cond_quant = get_cond_quant(fitdate, data, qcoef, target, horizon, fitparam['qsmooth'], fitparam['qsmooth_period'])
 
     # Estimation
     res, cq, fig, fig2, dfpdf = gen_skewt(fitdate, fitparam, cond_quant, horizon)
+    dict_output_tsfit = {}
     dict_output_tsfit['result'] = res
     dict_output_tsfit['data']   = cq
     dict_output_tsfit['fig']    = fig
@@ -46,7 +43,6 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
 
 def select_df_partition(fitdate, df, target, horizon, qsmooth='None', qsmooth_per=2):
     # Fitdat
-    depvar  = target + '_hz_' + str(horizon)
     df = df.copy()
     df.set_index('date', inplace=True)
     if qsmooth=='None':
@@ -64,7 +60,7 @@ def select_df_partition(fitdate, df, target, horizon, qsmooth='None', qsmooth_pe
         per=int(qsmooth_per)
         df_partition_fit = df[df.index<=fitdate].tail(per).mean()
     
-    df_partition_fit.drop(['date', depvar], inplace=True, errors='ignore')
+    df_partition_fit.drop(['date', target], inplace=True, errors='ignore')
     df_partition_fit['const'] = 1
     df_partition_fit = df_partition_fit.sort_index()
     return df_partition_fit
@@ -727,8 +723,8 @@ def alpha_star_plain(alpha, nu1, nu2):
     return(top/bottom)
 
 ## To improve speed, vectorize the ancillary functions (used everywhere else)
-K = np.vectorize(K_plain, otypes=[np.float], cache=False)
-alpha_star = np.vectorize(alpha_star_plain, otypes=[np.float], cache=False)
+K = np.vectorize(K_plain, otypes=[np.float64], cache=False)
+alpha_star = np.vectorize(alpha_star_plain, otypes=[np.float64], cache=False)
 
 # Expectation of the Assymetric student t, cf. Zhu and Galbraith JoE 2010
 def asymt_mean(alpha=0.5, nu1=1, nu2=1, mu=0, sigma=1):
@@ -942,7 +938,7 @@ def tskew_distance(quantile_list, cond_quant,
         """ Function which only depends on a given tau """
         return(tskew_ppf(tau, df=df, loc=loc, scale=scale, skew=skew))
 
-    tskew_ppf_vectorized = np.vectorize(tskew_tau, otypes=[np.float])
+    tskew_ppf_vectorized = np.vectorize(tskew_tau, otypes=[np.float64])
     
     theoretical_quant = tskew_ppf_vectorized(quantile_list)  
 
@@ -1116,7 +1112,7 @@ def asymt_distance(quantile_list, cond_quant,
         """ Function which only depends on a given tau """
         return(asymt_ppf(tau, alpha=skew, nu1=kleft, nu2=kright, mu=loc, sigma=scale))
         #asymt_ppf(p, alpha=0.5, nu1=1, nu2=1, mu=0, sigma=1)
-    asymt_ppf_vectorized = np.vectorize(asymt_tau, otypes=[np.float])
+    asymt_ppf_vectorized = np.vectorize(asymt_tau, otypes=[np.float64])
     
     theoretical_quant = asymt_ppf_vectorized(quantile_list)  
 

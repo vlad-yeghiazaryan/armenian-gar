@@ -33,13 +33,15 @@ from scipy.stats import gaussian_kde
 import statsmodels.api as sm
 
 # models (import)
+from GAR.growth import calc_growth_rate
 from GAR.partition import retropolated_PCA
 from GAR.quantfit import run_quantfit
 from GAR.tsfit import run_tsfit, get_cond_quant, select_df_partition
 from GAR.scenario import run_scenario, gen_shocked_PCA
 from GAR.historical import run_historical
 from GAR.segment import run_segment
-from GAR.grid import gen_scenario_data, growth_horizons, qRegFit, cond_quant_fits, select_x_list
+from GAR.grid import gen_scenario_data, growth_horizons, qRegFit
+from GAR.grid import cond_quant_fits, select_x_list, gen_PDF_and_CDF
 
 # # params
 # sns.set(style='whitegrid')
@@ -126,7 +128,6 @@ leverage = ['credit_to_gdp_gap', 'household_credit_stock_yoy', 'business_credit_
 external_sector = ['exchange_rate', 'net_tr_yoy', 'rus_y_yoy', 'copper_yoy_lag2', 'copper_yoy']
 
 # global parmas
-dict_global_params = {'target': 'real_y_ms', 'horizon':4}
 dict_groups = {
     'autoregressive': autoregressive, 
     'financial_conditions': financial_conditions, 
@@ -154,7 +155,7 @@ node_colors = {value: color_mapping[key] for key, values in (dict_groups|target_
 
 
 # importing data and perform pre-processing
-df_partition = pd.read_excel('../data/gar_main.xlsm', 'Data')
+df_partition = pd.read_excel('../data/arm_data/gar_main.xlsm', 'Data')
 
 # interpolate and forward fill missing values
 for column in df_partition:
@@ -239,46 +240,41 @@ class DataTransformer():
 
 # # Partitioning the input data
 
-# In[18]:
+# In[8]:
 
 
-# Lets try the transformer
-depvar  = dict_global_params['target'] + '_hz_' + str(dict_global_params['horizon'])
-transformer = DataTransformer()
-macro_data, partition_load, partition_log = retropolated_PCA(df_partition, dict_groups, **dict_global_params)
-macro_data = transformer.transform(macro_data, depvar)
-# display(macro_data)
+# performing retropolated PCA
+base_target = 'real_y_ms'
+horizon = 4
+target = base_target+'_hz_'+str(horizon)
+df_partition[target] = calc_growth_rate(df_partition[base_target], horizon=4, yearfreq=4, method_growth='cpd')
+macro_data, partition_load = retropolated_PCA(df_partition, dict_groups, target=target, horizon=horizon, 
+                                              method_growth='cpd', method='PCA')
 
+
+# In[9]:
 
 # # Quantile regression fit
 
-# In[7]:
+# In[10]:
 
 
 # quantile regression fit step (2)
 # quantlist = [0.1, 0.25, 0.5, 0.75, 0.9]
 quantlist = np.arange(0.025, 0.95, 0.025).round(2)
 dict_output_quantfit = run_quantfit(macro_data, quantlist=quantlist,
-                                    model=sm.QuantReg, **dict_global_params)
+                                    model=sm.QuantReg, target=target, horizon=4)
 
 
-# In[8]:
+# In[11]:
 
 
 qcoef = dict_output_quantfit['qcoef'].reset_index(drop=True)
 cond_quant_series = dict_output_quantfit['cond_quant'].reset_index()
-cond_quant_series.head()
-
-
-# In[ ]:
-
-
-
-
 
 # # T-skew fit
 
-# In[38]:
+# In[12]:
 
 
 # theme setup
@@ -290,7 +286,7 @@ sns.reset_defaults()
 # qsmooth: 'None' vs 'Median' vs 'Mean'
 latest_date = parser.parse('2020-03-31')
 fit_params = {
-    'fittype': 'T-skew',
+    'fittype': 'Kernel-based',
     'mode': {'constraint': 'Free', 'value':None, 'bandwidth':None},
     'qsmooth': 'None',
     'qsmooth_period': None,
@@ -304,13 +300,13 @@ fit_params = {
     'skew_high': {'constraint': 'Default', 'value': None}
 }
 # tsfit step (3)
-dict_output_tsfit = run_tsfit(latest_date, fit_params, macro_data, qcoef, **dict_global_params)
+dict_output_tsfit = run_tsfit(latest_date, fit_params, macro_data, qcoef, target=target, horizon=4)
 dfpdf = dict_output_tsfit['dfpdf']
 fitted_params = dict(dict_output_tsfit['result'])
 dict_output_tsfit['fig']
 
 
-# In[41]:
+# In[13]:
 
 
 # tsfit input data:
@@ -333,7 +329,7 @@ fit_params = {
     'skew_high': {'constraint': 'Default', 'value': None}
 }
 # tsfit step (3)
-dict_output_tsfit = run_tsfit(latest_date, fit_params, macro_data, qcoef, **dict_global_params)
+dict_output_tsfit = run_tsfit(latest_date, fit_params, macro_data, qcoef, target=target, horizon=4)
 dfpdf = dict_output_tsfit['dfpdf']
 fitted_params = dict(dict_output_tsfit['result'])
 dict_output_tsfit['fig']
@@ -341,7 +337,7 @@ dict_output_tsfit['fig']
 
 # # Counterfactual Scenarios Analysis
 
-# In[11]:
+# In[14]:
 
 
 # theme setup
@@ -358,11 +354,11 @@ shockvars = {
 # generating shocked series
 transformer = DataTransformer()
 df_shockedvar, df_shockedgrp = gen_shocked_PCA(shockvars, dict_groups, df_partition, 
-                                               transformer, **dict_global_params)
+                                               transformer, target=target, horizon=4)
 df_shockedgrp.columns = df_shockedgrp.columns.str.replace('_shocked', '')
 
 
-# In[12]:
+# In[ ]:
 
 
 # scenario input data:
@@ -397,7 +393,6 @@ cond_quant_shocked = get_cond_quant(latest_date, df_shockedgrp, qcoef, **dict_gl
 # run the distributional fit and plot the data
 dict_output_scenario = run_scenario(latest_date, cond_quant, cond_quant_shocked, 
                                     fit_params, fit_params_shocked, **dict_global_params)
-dict_output_scenario['fig'].savefig('../Results/Scenario_test.png', bbox_inches='tight', dpi=300)
 dict_output_scenario['fig']
 
 
@@ -647,23 +642,24 @@ def gen_scenario_horizons(y_horizons, scenarios, quantlist, horizonlist,
     x = select_x_list(model_fits, methods)
     
     # get dfpdf using a fixed set for x
-    for res_fit in res_fits:
+    for res_fit in tqdm(res_fits):
         model_fit = res_fit['model_fit']
         loc = res_fit['modx']
         method = res_fit['method']
         res_fit['dfpdf'] = gen_PDF_and_CDF(model_fit, method, x, loc)
     res_fits = pd.DataFrame(res_fits)
+    qcoeff_horizons = pd.concat(qcoeff_horizons)
     return res_fits, qcoeff_horizons
 
 
-# In[ ]:
+# In[8]:
 
 
 # Grid inputs
 target =  'real_y_ms'
 methods = ['T-skew', "Kernel-based"]
-quantlist = np.arange(0.05, 0.95, 0.05).round(2)
-horizonlist = np.arange(0, 17, 4)[1:]
+quantlist = np.arange(0.025, 1, 0.025).round(2)
+horizonlist = np.arange(1, 17, 1)
 y_horizons = growth_horizons(target, horizonlist, df_partition, method_growth='cpd')
 transformer = DataTransformer()
 qReg_model = sm.QuantReg
@@ -689,6 +685,10 @@ dates = scenarios['baseline'].dropna().index
 # fit a distribution for quantiles at every horizon, scenario, date with all methods
 cond_quants, qcoeffs = gen_scenario_horizons(y_horizons, scenarios, quantlist, horizonlist, 
                                              dates, fit_params, methods, qReg_model)
+
+# # save results into pickle files
+# cond_quants.to_pickle("../data/cond_quants.pkl")
+# qcoeffs.to_pickle("../data/qcoeffs.pkl")
 
 
 # In[ ]:

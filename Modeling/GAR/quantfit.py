@@ -21,25 +21,20 @@ def run_quantfit(data, target, horizon=4, model=QuantReg,
     and be executable as a regular Python function independent of Excel. **
     '''
     # ------------------------
-    # Create output dict
-    # ------------------------
-    dict_output_quantfit = dict()
-    
-    # ------------------------
     # Get parameters from
     # dict_input_quantfit
     # ------------------------
-    depvar  = target + '_hz_' + str(horizon)
     df_quantfit = data.copy()
-    regressors = df_quantfit.drop(columns=['date', depvar]).columns
+    regressors = df_quantfit.drop(columns=['date', target]).columns
     df_quantfit.set_index('date', inplace=True)
 
     # ------------------------
     # Run the quantfit
     # ------------------------
-    qcoeff, cond_quant, local_prj, exitcode = condquant(df_quantfit, depvar, regressors, horizon, quantlist, model)
+    qcoeff, cond_quant, local_prj, exitcode = condquant(df_quantfit, target, regressors, horizon, quantlist, model)
 
     # Add return values
+    dict_output_quantfit = {}
     dict_output_quantfit['qcoef']      = qcoeff
     dict_output_quantfit['cond_quant'] = cond_quant
     dict_output_quantfit['localprj']    = local_prj
