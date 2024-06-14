@@ -16,6 +16,48 @@ from .kernel import Weighted_kernel
 import matplotlib.pyplot as plt  
 from matplotlib.ticker import FormatStrFormatter
 
+def dist_fit(cond_quant, fitparam):
+  # T-skew fit
+  actual = cond_quant.pop('actual')
+  olsmean = cond_quant.pop('mean')
+  h = fitparam['mode']['bandwidth']
+  if fitparam['fittype']=='T-skew':
+      model_fit = tskew_fit(cond_quant, fitparam)
+      modx = model_fit['loc']
+      medx = tskew_ppf(0.5, df=model_fit['df'], loc=model_fit['loc'], scale=model_fit['scale'], skew=model_fit['skew'])
+      meanx = tskew_mean(df=model_fit['df'], loc=model_fit['loc'], scale=model_fit['scale'], skew=model_fit['skew'])
+      
+    # Asymmetric T-skew fit
+  elif fitparam['fittype']=='Asymmetric T':
+      model_fit = asymt_fit(cond_quant, fitparam, olsmean)
+      modx = model_fit['loc']
+      medx = asymt_ppf(0.5, alpha=model_fit['skew'], nu1=model_fit['kleft'], nu2=model_fit['kright'], mu=model_fit['loc'], sigma=model_fit['scale']) 
+      meanx = asymt_mean(alpha=model_fit['skew'], nu1=model_fit['kleft'], nu2=model_fit['kright'], mu=model_fit['loc'], sigma=model_fit['scale'])
+
+  # Kernel fit
+  elif fitparam['fittype']=='Kernel-based':
+    cond_quant_uncross = quantile_uncrossing(cond_quant)
+    model_fit = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+    model_fit.w_kernel_fit()
+    
+    # getting the kernel mode, median and mean
+    x = model_fit.q_values
+    ypdf = model_fit.w_kernel_pdf(x)
+    modx = x[np.argmax(ypdf)]
+    medx = model_fit.w_kernel_ppf(0.5)
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    
+  res = {
+    'olsmean': olsmean,
+    'actual': actual,
+    'cond_quant': cond_quant,
+    'model_fit': model_fit,
+    'modx': modx,
+    'medx': medx,
+    'meanx':meanx
+    }
+  return  res
+
 def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
     '''
     Main run function for step 3, tsfit.
@@ -43,31 +85,38 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
 
 def select_df_partition(fitdate, df, target, horizon, qsmooth='None', qsmooth_per=2):
     # Fitdat
+    if 'date' not in df.columns:
+        raise Exception("No 'date' in columns.")
     df = df.copy()
-    df.set_index('date', inplace=True)
+    per = int(qsmooth_per)
+    index_cols = [c for c in ['date', 'country'] if c in df.columns]
+    df.set_index(index_cols, inplace=True)
+    df_subset = df[df.index.get_level_values('date') <= fitdate].reset_index('date')
+    empty_index = (len(df_subset.index.names) == 1) and (df_subset.index.name == None)
+    df_subset.index = np.ones(len(df_subset.index)) if empty_index else df_subset.index
+    df_subset.index.name = 'variable' if empty_index else df_subset.index.name
     if qsmooth=='None':
         try:
-            df_partition_fit = df.loc[fitdate]
+            df_partition_fit = df_subset.set_index('date', append=True).groupby(df_subset.index.names).apply(lambda x: x.loc[1].loc[fitdate].copy())
         except:
-            df_partition_fit = df.iloc[-1,:]
-            print('The latest date in the data will be used.')
-                           
-    elif qsmooth=='Median':
-        per = int(qsmooth_per)
-        df_partition_fit = df[df.index<=fitdate].tail(per).median()
-        
-    elif qsmooth=='Mean':        
-        per=int(qsmooth_per)
-        df_partition_fit = df[df.index<=fitdate].tail(per).mean()
+            df_partition_fit = df_subset.set_index('date', append=True).groupby(df_subset.index.names).apply(lambda x: x.loc[1].iloc[-1,:].copy())
+            print('The latest date in the data will be used.')      
     
-    df_partition_fit.drop(['date', target], inplace=True, errors='ignore')
-    df_partition_fit['const'] = 1
+    elif qsmooth=='Median':
+        df_subset = df_subset.drop(columns='date')
+        df_partition_fit = df_subset.groupby(df_subset.index.names).apply(lambda x: x.tail(per).median())
+ 
+    elif qsmooth=='Mean':
+        df_subset = df_subset.drop(columns='date')
+        df_partition_fit = df_subset.groupby(df_subset.index.names).apply(lambda x: x.tail(per).mean())
+    
+    df_partition_fit.drop(index_cols + [target], inplace=True, errors='ignore')
     df_partition_fit = df_partition_fit.sort_index()
     return df_partition_fit
 
 def get_cond_quant(fitdate, data, qcoef, target, horizon, qsmooth='None', qsmooth_per=2):
     df_partition_fit = select_df_partition(fitdate, data, target, horizon, qsmooth, qsmooth_per)
-    cond_quant = qcoef.groupby('quantile').apply(lambda x: df_partition_fit @ x.set_index('variable')['coeff_noscale'].sort_index())
+    cond_quant = qcoef.groupby('quantile').apply(lambda x: df_partition_fit @ x.set_index('variable')['coeff'].sort_index())
     return cond_quant.to_dict()
 
 def gen_skewt(fitdate, fitparam, cond_quant, horizon):
@@ -210,8 +259,8 @@ def gen_kernel_PDF_and_CDF(kernel_model, x=None):
         x = np.array([x for x in np.linspace(min_v,max_v,500)])
     density_hat = kernel_model.w_kernel_pdf(x)
     theta_hat = kernel_model.w_kernel_cdf(x)
-    dfpdf = pd.DataFrame({'Kernel_PDF_x':x, 'Kernel_PDF_y':density_hat,
-                          'Kernel_CDF_y':theta_hat})
+    dfpdf = pd.DataFrame({'PDF_x':x, 'PDF_y':density_hat,
+                          'CDF_y':theta_hat})
     return dfpdf
 
 def gen_t_PDF_and_CDF(tsfit, x_list=None):
@@ -227,16 +276,16 @@ def gen_t_PDF_and_CDF(tsfit, x_list=None):
         x_list = [x for x in np.arange(min_v,max_v,0.05)]
     yvals = [tskew_pdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]    
     ycdf = [tskew_cdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]
-    tmp_dic={'Tskew_PDF_x':x_list,'Tskew_PDF_y':yvals,'Tskew_CDF':ycdf}
+    tmp_dic={'PDF_x':x_list,'PDF_y':yvals,'CDF_y':ycdf}
     dfpdf = pd.DataFrame(tmp_dic)
     return dfpdf
 
-def gen_PDF_and_CDF(model_fit, fitparam, x_list=None, loc=None):
-    if fitparam['fittype']=='T-skew':
+def gen_PDF_and_CDF(model_fit, fittype, x_list=None, loc=None):
+    if fittype=='T-skew':
         dfpdf = gen_t_PDF_and_CDF(model_fit, x_list)
-    elif fitparam['fittype']=='Asymmetric T':
+    elif fittype=='Asymmetric T':
         dfpdf = gen_asymt_PDF_and_CDF(model_fit, loc, x_list)
-    elif fitparam['fittype']=='Kernel-based':
+    elif fittype=='Kernel-based':
         dfpdf = gen_kernel_PDF_and_CDF(model_fit, x_list)
     return dfpdf
 
@@ -258,7 +307,7 @@ def gen_asymt_PDF_and_CDF(asymtfit, loc, x_list=None):
     yvals= [asymt_pdf(z, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale']) for z in x_list]    
     ycdf = [asymt_cdf(z, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale']) for z in x_list]
     
-    tmp_dic = {'AsymT_PDF_x':x_list,'AsymT_PDF_y':yvals,'AsymT_CDF':ycdf}
+    tmp_dic = {'PDF_x':x_list,'PDF_y':yvals,'CDF_y':ycdf}
     dfpdf = pd.DataFrame(tmp_dic)
     return dfpdf
 
@@ -297,7 +346,7 @@ def plot_T_dist(fitdate, dfpdf, fitparam, tsfit, loc, horizon):
     meany=tskew_pdf(meanx, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
     
     if fitparam['plot_mode']:
-        ax.plot([modx,modx],[0,mody],'r-.')
+        ax.plot([modx, modx],[0,mody],'r-.')
         ax.annotate('Mode', xy=(modx, mody),xycoords='data',
                     xytext=(modx+x_inc, mody*1.2), textcoords='data',
                     arrowprops=dict(arrowstyle="->",

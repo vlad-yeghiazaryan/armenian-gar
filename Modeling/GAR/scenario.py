@@ -238,7 +238,7 @@ def plot_T_dist(fitdate, dfpdf, q5loc_raw, q5loc_shocked, horizon):
     else:
         ax.fill_between(x_list[:q5loc_shocked], 0, yvals_shocked[:q5loc_shocked],  facecolor='g', interpolate=True)
         ax.fill_between(x_list[:q5loc_raw], 0, yvals_raw[:q5loc_raw],  facecolor='c', interpolate=True)
-        
+
     ax.plot(x_list,yvals_raw,'c-',label=lablestr_raw)
     ax.plot(x_list,yvals_shocked,'g-',label=lablestr_shocked)
     ax.legend(fontsize=24)

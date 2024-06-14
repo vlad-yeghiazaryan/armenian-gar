@@ -1,11 +1,12 @@
-
-from datetime import datetime as date
-
 ## 3rd-party modules
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import scale
 import statsmodels.api as sm
 from statsmodels.api import QuantReg
+
+# utils
+import warnings
 
 # Functions for step 2: quantfit
 def run_quantfit(data, target, horizon=4, model=QuantReg, 
@@ -52,7 +53,7 @@ def condquant(dall, depvar, regressors_avl, horizon, ql, model, intercept, model
     qrs = QuantileReg(depvar, indvars=regressors_avl,
                       quantile_list=ql, data=dall,
                       model=model, model_fit_args=model_fit_args,
-                      intercept=intercept, scaling=False, alpha=0.1)
+                      intercept=intercept, scaling=True, alpha=0.1)
 
     dc = qrs.coeff
     dc = add_id(dc,c_id_dict)
@@ -157,9 +158,12 @@ class QuantileReg(object):
             X = self.data[self.regressors]
             if self.intercept:
                 X = sm.add_constant(X)
-            qfit = self.QModel(y, X).fit(q=tau, **self.model_fit_args)
+            with warnings.catch_warnings(record=True) as w:
+                qfit = self.QModel(y, X).fit(q=tau, **self.model_fit_args)
+            w = np.NaN if len(w) == 0 else w[0]
+            qfit.warning = w
             qfit_dict[tau] = qfit
-        return(qfit_dict)
+        return qfit_dict
 
     def __mfit(self): 
         """ Estimate the fit for every quantiles """
@@ -167,8 +171,11 @@ class QuantileReg(object):
         X = self.data[self.regressors]
         if self.intercept:
             X = sm.add_constant(X)
-        mfit = sm.OLS(y, X).fit()
-        return(mfit)
+        with warnings.catch_warnings(record=True) as w:
+            mfit = sm.OLS(y, X).fit()
+        w = np.NaN if len(w) == 0 else w[0]
+        mfit.warning = w
+        return mfit
 
     def __coeff(self):
         """ Extract the parameters and package them into pandas dataframe """
@@ -181,6 +188,7 @@ class QuantileReg(object):
             dp.insert(0, 'quantile', qfit.q) # Insert as a first column
             dp['R2_in_sample'] = qfit.prsquared
             dp['Model'] = qfit
+            dp['warning'] = qfit.warning
             ## Add the scaling information
             dp.loc[:,'normalized'] = self.scaling
             params = pd.concat([params, dp])
@@ -192,6 +200,8 @@ class QuantileReg(object):
         dmp = pd.concat(stats, axis=1); dmp.columns = stats_names
         dmp.insert(0, 'quantile', 'mean') # Insert as a first column
         dmp['R2_in_sample'] = mfit.rsquared
+        dmp['Model'] = mfit
+        dmp['warning'] = mfit.warning
         ## Add the scaling information
         dmp.loc[:,'normalized'] = self.scaling
         coeff = pd.concat([params, dmp], axis='index')

@@ -331,66 +331,37 @@ def get_hist_kernel_dist(cond_quants, fitparam, dates, horizon):
         res.append(res_fit)
     return res
 
-def select_t_x_list(tsfits):
-    loclist = [tsfit['loc'] for tsfit in tsfits]
+def get_model_quantiles(model, fittype):
+    if fittype=='T-skew':
+        v_q15=tskew_ppf(0.15, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q40=tskew_ppf(0.4, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q60=tskew_ppf(0.6, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q85=tskew_ppf(0.85, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+    elif fittype=='Asymmetric T':
+        v_q15 = asymt_ppf(0.15, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q40 = asymt_ppf(0.4, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q60 = asymt_ppf(0.6, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q85 = asymt_ppf(0.85, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+    elif fittype=='Kernel-based':
+        v_q15, v_q40, v_q60, v_q85 = model.w_kernel_ppf(np.array([0.15, 0.4, 0.6, 0.85]))
+    return v_q15, v_q40, v_q60, v_q85
+
+def select_x_list(model_fits, fittypes, modx):
+     # extract the mode for each period
+    loclist = np.array(modx)
+    
+    # set initial values
     min_v = min(loclist)-8
     max_v = max(loclist)+8
-    for tsfit in tsfits:
-        v_q15=tskew_ppf(0.15, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q40=tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q60=tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q85=tskew_ppf(0.85, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-
-        # increase the range if some quantiles are outside
-        min_v = min(min_v,v_q15-abs(v_q15-v_q40))
-        max_v = max(max_v,v_q85+abs(v_q85-v_q60))
-    x_list = [x for x in np.arange(min_v,max_v,0.05)]
-    return x_list
-
-def select_asymt_x_list(asymtfits):
-    loclist = [asymtfit['loc'] for asymtfit in asymtfits]
-    min_v = min(loclist)-1.5
-    max_v = max(loclist)+1.5
-
-    for asymtfit in asymtfits:
-        v_q15 = asymt_ppf(0.15, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q40 = asymt_ppf(0.4, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q60 = asymt_ppf(0.6, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q85 = asymt_ppf(0.85, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-
-        # increase the range if some quantiles are outside
-        min_v = min(min_v,v_q15-abs(v_q15-v_q40))
-        max_v = max(max_v,v_q85+abs(v_q85-v_q60))
-    x_list = [x for x in np.arange(min_v,max_v,0.05)]
-    return x_list
-
-def select_kernel_x_list(kfits):
-    # estimate the mean for each period
-    meanlist = []
-    for kfit in kfits:
-        x = kfit.q_values
-        ypdf = kfit.w_kernel_pdf(x)
-        meanx = (x @ ypdf)/np.sum(ypdf)
-        meanlist.append(meanx)
-
-    # set initial values
-    min_v = min(meanlist)-8
-    max_v = max(meanlist)+8
-
-    for kfit in kfits:
-        v_q15, v_q40, v_q60, v_q85 = kfit.w_kernel_ppf(np.array([0.15, 0.4, 0.6, 0.85]))
-
+    
+    for fittype, modelfit in zip(fittypes, model_fits):
+        v_q15, v_q40, v_q60, v_q85 = get_model_quantiles(modelfit, fittype)
+        
         # increase the range if some quantiles are outside
         min_v = min(min_v,v_q15-abs(v_q15-v_q40))
         max_v = max(max_v,v_q85+abs(v_q85-v_q60))
     x_list = np.array([x for x in np.linspace(min_v,max_v,500)])
     return x_list
 
-def select_x_list(model_fits, fittype):
-    if fittype=='T-skew':
-        x_list = select_t_x_list(model_fits)
-    elif fittype=='Asymmetric T':
-        x_list = select_asymt_x_list(model_fits)
-    elif fittype=='Kernel-based':
-        x_list = select_kernel_x_list(model_fits)
-    return x_list
+
+    
