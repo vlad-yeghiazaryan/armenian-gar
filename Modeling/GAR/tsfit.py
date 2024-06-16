@@ -18,8 +18,8 @@ from matplotlib.ticker import FormatStrFormatter
 
 def dist_fit(cond_quant, fitparam):
   # T-skew fit
-  actual = cond_quant.pop('actual')
-  olsmean = cond_quant.pop('mean')
+  actual = cond_quant.pop('actual') if 'actual' in cond_quant else None
+  olsmean = cond_quant.pop('mean') if 'mean' in cond_quant else None
   h = fitparam['mode']['bandwidth']
   if fitparam['fittype']=='T-skew':
       model_fit = tskew_fit(cond_quant, fitparam)
