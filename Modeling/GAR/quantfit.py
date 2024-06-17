@@ -137,7 +137,9 @@ class QuantileReg(object):
         ## Depending on user input, scale the variables
         vars_reg = [self.depvar] + self.regressors
         if self.scaling == True:
-            self.data.loc[:, vars_reg] = scale(self.data.loc[:, vars_reg])
+            # add some random constant so it doesn't break
+            rand_const = 10
+            self.data.loc[:, vars_reg] = scale(self.data.loc[:, vars_reg]) + rand_const
         else:
             pass
         
