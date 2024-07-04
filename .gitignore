@@ -5,4 +5,4 @@
 .Rproj.user
 *.app
 .virtual_documents
-*/data/working_data/*
+data/working_data
