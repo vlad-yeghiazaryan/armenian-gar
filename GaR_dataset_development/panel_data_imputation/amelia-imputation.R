@@ -24,12 +24,6 @@ panel_dataset <- read_csv("../data/working_data/panel_dataset_consistent.csv",
 panel_dataset = as.data.frame(panel_dataset)
 panel_vars = colnames(panel_dataset)[c(-1, -2)]
 
-# panel_dataset_normalized.csv
-panel_dataset.normalized <- read_csv("../data/working_data/panel_dataset_normalized.csv", 
-                                     col_types = cols(date = col_date(format = "%Y-%m-%d")))
-panel_dataset.normalized = as.data.frame(panel_dataset.normalized)
-panel_vars.normalized = colnames(panel_dataset.normalized)[c(-1, -2)]
-
 # polytime = 2
 # lags='tariff'
 # logs='tariff'
@@ -52,8 +46,6 @@ save(panel_dataset.out.poly, file = "panel_dataset_imputations_PIC.RData")
 
 # Loading the imputed panel
 load("panel_dataset_imputations_PIC.RData")
-load("panel_dataset_imputations_PICN.RData")
-
 
 # plotting the individual time series
 # par(mfrow = c(1, 1))
@@ -61,18 +53,14 @@ plot_var <- "Equity_index"
 tscsPlot(panel_dataset.out.poly, cs="Armenia", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
-tscsPlot(panel_dataset.norm.poly, cs="Armenia", 
-         main = paste(plot_var, " (PI)"),
-         var = plot_var)
 
 # plotting the individual time series
 # par(mfrow = c(1, 1))
 plot_var <- "GDP_real_PctC4"
-tscsPlot(panel_dataset.out.poly, cs="Ukraine", 
+tscsPlot(panel_dataset.out.poly, cs="Austria", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
-plot_var <- "GDP_real"
-tscsPlot(panel_dataset.norm.poly, cs="Ukraine", 
+tscsPlot(panel_dataset.out.poly, cs="France", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
 
@@ -83,19 +71,16 @@ plot_var <- "Bank_liabilities_MC_PctC4"
 tscsPlot(panel_dataset.out.poly, cs="Armenia", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
-plot_var <- "Bank_liabilities_MC"
-tscsPlot(panel_dataset.norm.poly, cs="Armenia", 
-         main = paste(plot_var, " (PI)"),
-         var = plot_var)
 
 # plotting the individual time series
 # par(mfrow = c(1, 1))
-plot_var <- "Credit_GDP_ratio_C4"
+plot_var <- "Credit_GDP_ratio_C8"
 tscsPlot(panel_dataset.out.poly, cs="Armenia", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
-plot_var <- "Credit_GDP_ratio"
-tscsPlot(panel_dataset.norm.poly, cs="Armenia", 
+
+plot_var <- "MPR"
+tscsPlot(panel_dataset.out.poly, cs="Armenia", 
          main = paste(plot_var, " (PI)"),
          var = plot_var)
 
@@ -110,18 +95,10 @@ disperse(panel_dataset.out.poly, dims = 1, m = 5)
 # checking the density of the imputed vs actual series
 # plot(price.out.simple, which.vars = price_columns)
 plot(panel_dataset.out.poly, which.vars = panel_vars)
-plot(panel_dataset.norm.poly, which.vars = panel_vars.normalized)
 
 # combining (into a single dataframe)
 mean_imputed_panel_dataset <- combineImputations(panel_dataset.out.poly$imputations, 
                                                 panel_dataset)
-mean_imputed_panel_dataset.normalized <- combineImputations(panel_dataset.norm.poly$imputations, 
-                                                            panel_dataset.normalized)
-
-# plot some finalized series
-ukr = mean_imputed_panel_dataset.normalized[mean_imputed_panel_dataset.normalized$country == 'Ukraine',]
-ggplot(ukr, aes(x=date, y=GDP_real)) + geom_line()
 
 # exporting the imputations
 write.csv(mean_imputed_panel_dataset, file = "../data/working_data/panel_dataset_filled.csv", row.names = FALSE)
-write.csv(mean_imputed_panel_dataset.normalized, file = "../data/working_data/panel_dataset_nf.csv", row.names = FALSE)
