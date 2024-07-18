@@ -1028,7 +1028,6 @@ def tskew_fit(conditional_quantiles, fitparams):
     ######################
     if fitparams['skew_low']!='Free':
         pass
-    
 
     ## Interquartile range (proxy for volatility)
     try:
