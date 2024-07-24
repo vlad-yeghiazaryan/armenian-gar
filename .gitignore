@@ -7,3 +7,4 @@
 .virtual_documents
 data/working_data
 *$*.docx
+*.pkl
