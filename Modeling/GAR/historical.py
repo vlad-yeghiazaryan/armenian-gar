@@ -331,6 +331,23 @@ def get_hist_kernel_dist(cond_quants, fitparam, dates, horizon):
         res.append(res_fit)
     return res
 
+def get_quantiles(q, model, fittype):
+    if fittype=='T-skew':
+        v = []
+        for q_i in q:
+            v_i = tskew_ppf(q_i, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+            v.append(v_i)
+        v = np.array(v)
+    elif fittype=='Asymmetric T':
+        v = []
+        for q_i in q:
+            v_i = asymt_ppf(q_i, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+            v.append(v_i)
+        v = np.array(v)
+    elif fittype=='Kernel-based':
+        v = model.w_kernel_ppf(q)
+    return v
+
 def get_model_quantiles(model, fittype):
     if fittype=='T-skew':
         v_q15=tskew_ppf(0.15, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
