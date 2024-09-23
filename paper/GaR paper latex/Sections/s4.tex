@@ -1,0 +1,126 @@
+\section{Methodology}
+\subsection{Panel quantile regression}
+As we have discussed before, macroprudential policy has different effects on the GDP growth distribution \citep{boar_2017}. To model these nonlinearities we use the quantile regression framework \citep{koenker_1978_regression} which allows us to focus on different conditional quantiles of the distribution and not just the conditional mean. Quantile regression has also become quite popular in forecasting growth-at-risk, which is the expected loss in GDP growth given a tail event. In fact, it has proven to outperform GARCH-type models \citep{kipriyanov_2022} in this task. In a panel framework, quantile regression helps to account for heterogeneous covariates, while the fixed effects consider the unobserved heterogeneity which does not change with respect to time \citep{galan2020}. It is important to note that in this framework the fixed effects are subject to change depending on the quantile. For a general case, a panel quantile regression takes the following form:
+\begin{equation}
+    \label{eq:panel_qr}
+    y_{i,t+h} = \alpha_{i, \tau} + X_{i,t} \beta_\tau + \nu_{\tau,t+1}
+\end{equation}
+\begin{equation}
+    \label{eq:panel_qr_loss}
+    \nu_{\tau,t+1} = \sum_{i=1}^n \sum_{t=1}^{T-h}\rho_\tau| y_{i,t+h} -  y_{i,t+h}^*|
+\end{equation}
+\begin{equation}
+    \label{eq:panel_qr_weights}
+    \rho_\tau = \tau \cdot 1_{y_{i,t+h} \geq y_{i,t+h}^*} + (1-\tau) \cdot 1_{y_{i,t+h} < y_{i,t+h}^*}
+\end{equation}
+
+where, $y_{i,t+h}^*$ is the quantile regression estimate, $X_{i,t}$ is a vector of exogenous variables, $\alpha_{i, \tau}$ is a vector of fixed effects, $\rho_\tau$ are the quantile-based weights, $\tau\in\Gamma$ is the quantile, while $t\in T$ and $i\in n$ are the time dimension and the cross-section dimension respectively. In our case $T$=120 and $n$=41. An important note is that the model uses least absolute deviation (LAD) as its optimality criterion.
+
+\subsection{Quantile regression for Armenia (local model)}
+The baseline quantile regression model for the Armenian economy takes the form:
+\begin{equation}
+    \label{eq:local_qr}
+    \begin{aligned}
+    y_{t+h} = 
+    &\;\alpha_\tau + \beta_{1, \tau}y_t + \beta_{2, \tau}\text{FCyI}_t + \beta_{3, \tau}\text{FCI}_t + \beta_{4, \tau}\text{CI}_t \\
+    &+ \beta_{5, \tau}\text{MPI}_t + \beta_{6, \tau}\text{CAR}_t + \beta_{7, \tau}\text{LR}_t + \beta_{8, \tau}\text{MI}_t \\
+    &+ \beta_{9, \tau}\text{CyBPA}_t + \beta_{10, \tau}\text{CBPA}_t + \varepsilon_{t, \tau}
+    \end{aligned}
+\end{equation}
+
+In this specification $y_{t+h}$ is the annualized average growth rate of real GDP at $t+h$ quarters ahead. The $\alpha_\tau$ is an intercept, $y_t$ is the autoregressive component, $\text{FCyI}_t$ is the financial cycle index, $\text{FCI}_t$ is the financial conditions index, and $\text{CI}_t = St(\text{FCyI}_t) \cdot St(\text{FCI}_t)$ is the “crisis index,” which is the product between the standardized $\mathcal{N}(0, 1)$ $\text{FCyI}_t$ and $\text{FCI}_t$.
+
+Next, we include the macroprudential policy index $\text{MPI}_t$, the 2-year change in the excess capital adequacy ratio (actual minus minimum requirement) $\text{CAR}_t$, and the excess liquidity ratio (HQLA/Assets) $\text{LR}_t$. The MPI is computed (both for the local and panel models) using the methodology and the dataset proposed by \citet{alam2019}. The dataset includes 17 categories of macroprudential measures over time. Each tightening is expressed as +1, while each loosening is represented as -1. Finally, no or neutral actions are marked as 0. We define the sum of the 17 dummy categories at time $t$ as $MP_t$. We express the MPI as the 4-quarter rolling sum of $MP_t$ like so:
+\begin{equation}
+    \label{eq:local_mpi}
+    \text{MPI}_t = \sum_{p=0}^{3} \text{MP}_{t-p}
+\end{equation}
+
+The rest of the model includes a control variable, the macroeconomic indicator $\text{MI}_t$. This variable is constructed using a partial least squares regression between the current GDP growth (autoregressive term in \autoref{eq:local_qr}) and 10 macro variables. These include the exchange rate, trade balance, copper prices, current account, unemployment rate, government debt, government expenditure, the fiscal impulse from the QPM, CPI, and the central bank refinancing rate.
+
+Finally, we include the interaction terms with the MPI, specifically, the Cycle-Based Policy Adjustment $\text{CyBPA}_t$ and the Conditions-Based Policy Adjustment $\text{CBPA}_t$.
+
+\subsection{Financial conditions index}
+To estimate the FCI we use a factor-augmented VAR with structural instabilities and time-varying coefficients (TVP-FAVAR). The p-lag TVP-FAVAR \citep{koop_2013} state-space model takes the form:
+\begin{align}
+    \label{eq:tvpfavar_design}
+    \begin{bmatrix}
+        y_t \\
+        x_t \\
+    \end{bmatrix} &= 
+    \begin{bmatrix}
+        1 & 0 \\
+        \lambda_t^y & \lambda_t^f \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        y_t \\
+        f_t \\
+    \end{bmatrix} +
+    \begin{bmatrix}
+        0 \\
+        \nu_t \\
+    \end{bmatrix}
+\end{align}
+\begin{align}
+    \label{eq:tvpfavar_transition}
+    \begin{bmatrix}
+        y_t \\
+        f_t \\
+    \end{bmatrix} &=
+    c_t +
+    B_{t,1}
+    \begin{bmatrix}
+        y_{t-1} \\
+        f_{t-1} \\
+    \end{bmatrix} + \dots
+    B_{t,p}
+    \begin{bmatrix}
+        y_{t-p} \\
+        f_{t-p} \\
+    \end{bmatrix} + \epsilon_t
+\end{align}
+\begin{equation}
+    \label{eq:tvpfavar_design_coeff}
+    \lambda_t = \lambda_{t-1} + \theta_t
+\end{equation}
+\begin{equation}
+    \label{eq:tvpfavar_transition_coeff}
+    \beta_t = \beta_{t-1} + \eta_t
+\end{equation}
+
+where $x_t$ is an $n_f\times1$ vector of financial variables, with $n_f=17$. These include interest rate spreads, mortgage rates, government bond rates, the level, slope, and curvature of the yield curve, the return on equity (RoE) of banks, and so on. The $y_t$ is an $s_m\times1$ vector of macro variables. In our model, we included the consumer price index (CPI), real GDP growth, and the monetary policy rate. In the design matrix (\autoref{eq:tvpfavar_design}), $\lambda_t^y$ is a vector of regression coefficients, while $\lambda_t^f$ is a vector of factor loadings. In the state equation, we have the latent factor $f_t$ interpreted as the FCI. The $c_t$ is a vector of intercepts, while $(B_{t,1} \dots B_{t,p})$ are matrices of VAR coefficients. We use $\lambda_t=\left((\lambda_t^y)^T,(\lambda_t^f)^T \right)^T$ and $\beta_t=\left(c_t^T,\text{vec}(B_{t,1})^T \dots \text{vec}(B_{t,p})^T\right)^T$ to track the time-varying properties of the parameters. Finally, the error terms $\nu_t$, $\epsilon_t$, $\theta_t$, and $\eta_t$ are zero-mean gaussian disturbances. Their covariances $V_t$, $Q_t$, $W_t$, and $R_t$ may also change over time. $V_t$, $W_t$, and $R_t$ are diagonal, thus the disturbance terms are assumed to be uncorrelated with each other.
+
+To estimate the model a 3-step algorithm is used. First, we initialize the parameters and estimate the principal component analysis (PCA) based $f_t^*$. Next, we use this $f_t^*$ to obtain our time-varying parameters. We then use the “Variance Discounting” (VD) method proposed by the authors \citep{koop_2013} to estimate $V_t$, $Q_t$, $W_t$, and $R_t$. Using these disturbances, we can then estimate the actual $\lambda_t$ and $\beta_t$ using Kalman filtering and smoothing (KFS). Finally, we use the time-varying coefficients to generate $f_t$ using KFS.
+
+\subsection{Financial cycle index}
+The financial cycle index is an aggregate of different variables related to loan loss. These include the credit-to-GDP gap, private and corporate loan flows, real estate prices, and so on. Formally \citep{hollo2012}, the aggregation can be expressed as:
+\begin{equation}
+    \label{eq:fcyi}
+    \text{FCyI}_t = (w\odot s_t)^T C_t (w\odot s_t)
+\end{equation}
+
+where, $s_t$ is the vector of exogenous indicators at time $t$ and $w$ is a vector showing the relative importance of the values in $s_t$. The expression $(w\odot s_t)$ is the Hadamard product between the vectors (element-wise multiplication). The matrix $C_t$ contains values of the cross-correlation coefficients for the indicators at time $t$. The matrix $C_t$ is estimated recursively using an exponentially weighted moving average (EWMA) process, utilizing the previous variance and covariance values as a base. Finally, the relative weights $w$ are determined by running a constrained optimization to find the $\text{FCyI}_t$ that provides the best predictions for future loan loss impairments \citep{plasil2014}.
+
+\subsection{Parametric fit}
+After evaluating the quantile regression models, we end up with conditional quantile estimates $y_{t+h, \tau}^*$. With a sufficiently large set of quantiles $\Gamma$, one can describe the conditional cumulative distribution function (CDF) of the output growth at time $t+h$. To derive the probability distribution function (PDF) a parametric t-skew fit \citep{adrian_2019} is used. Compared to the normal distribution, the t-distribution is much better suited for capturing the fat tails. Using the closed-form specification of the distribution proposed by \citet{giot2003} we define the CDF as:
+\begin{equation}
+    \label{eq:tskew_cdf_n}
+    F(x, \mu, \sigma, \text{df}, \xi) = \frac{2}{1+\xi^2} T_{cdf}\left(\frac{x-\mu}{\sigma}\xi, \text{df}\right), \;\text{if}\; x \leq \mu 
+\end{equation}
+\begin{equation}
+    \label{eq:tskew_cdf_p}
+    F(x, \mu, \sigma, \text{df}, \xi) = 1 - \frac{2}{1+\frac{1}{\xi^2}} T_{cdf}\left(-\frac{x-\mu}{\sigma}\frac{1}{\xi}, \text{df}\right), \;\text{if}\; x > \mu 
+\end{equation}
+
+where $\mu$ and $\sigma$ are the location and scale parameters, while $\xi$ is the skewness. To simplify the search space to only three parameters we anchor the degrees of freedom at 2 ($\text{df}=2$). Finally, we define the optimization function in terms of quantiles:
+\begin{equation}
+    \label{eq:tskew_cdf_loss}
+    \mu_{t+h}^*, \sigma_{t+h}^*, \xi_{t+h}^* = arg\,min\left(\sum_\tau \left(F(y_{t+h, \tau}^*, \mu, \sigma, \text{df}^*, \xi)-\tau\right)^2\right)
+\end{equation}
+
+After the location, scale, and skewness parameters are estimated they can be used to generate the t-skew PDF and CDF at time at time $t+h$.
+
+\subsection{Data}
+The panel model for this study utilizes a quarterly dataset covering 41 countries and 16 variables (19, including interaction effects) for the period from 1993 to 2020. The majority of the data was sourced from two key International Monetary Fund (IMF) databases: the International Financial Statistics (IFS) and the Financial Soundness Indicators (FSI) \citep{ifs2024, fsi2024}. For data related to equity indices, we relied on the Global Economic Monitor (GEM) database (2023), maintained by the \citet{gem2024}. The data on residential property prices, debt service ratios, credit-to-GDP gaps, and policy rates was sourced from the Bank for International Settlements \citep{RPP, DSR, CREDIT_GAPS, CBPOL}. Some of the variables related to government bond rates were extracted from individual central bank websites. Lastly, data for the MPI was sourced from the iMaPP database \citep{alam2019}.
+
+The Armenian model effectively utilized 32 variables (35 with interaction effects) covering the period from 2003 to 2024. The FCI required 8 interest-rate related variables, FCyI was constructed using 9 credit-related variables, the MI incorporated 10 macroeconomic variables, while the final model included 8 exogenous indicators (including the three indices). All of the data for the local model were collected from the Central Bank of Armenia \citep{cba2024}.\footnote{To overview summary statistics and data transformations please refer to \ref{appx:data}.}

@@ -1,0 +1,38 @@
+\section{Suarez welfare function}
+\label{appx:suarez}
+One of the main advantages of GaR is that it is measured in the same units as GDP growth. This makes the comparison between the two very straightforward. Yet compared to monetary policy, the macroprudential policy literature still lacks explicit design rules. \citet{suarez2022} fills this gap by suggesting a welfare function that “rewards expected GDP growth and penalizes the gap between expected GDP growth and GaR.” To derive this welfare function from microfoundations, the following steps are used.
+First, let $Y$ denote GDP and $y$ the GDP growth rate:
+\begin{equation}
+    \label{eq:gdp_growth_theory}
+    Y = (1+y)Y_0
+\end{equation}
+
+Now let us assume that there is a representative agent with a local coefficient of absolute risk aversion $\lambda(Y_0)$ at $Y=Y_0$. Then we can express the utility function as one exhibiting constant absolute risk aversion (CARA) with $\lambda(Y_0)$, so that:
+\begin{equation}
+    \label{eq:utility_theory}
+    U(Y) = -\exp{\left(\lambda(Y_0)Y\right)}
+\end{equation}
+
+If we insert \autoref{eq:gdp_growth_theory} in \autoref{eq:utility_theory}, and perform a monotonic transformation, we get:
+\begin{equation}
+    \label{eq:utility_growth_rate_theory}
+    u(y) = -\exp{\left(\lambda(Y_0)Y_0y\right)} = -\exp{\left(\rho_0 y\right)}
+\end{equation}
+In \autoref{eq:utility_growth_rate_theory} $\rho_0=\lambda(Y_0)Y_0$ describes the agent’s coefficient of relative risk aversion at $Y_0$. If we assume GDP growth is normally distributed, so that $y\sim\mathcal{N}(y_m,y_s^2)$, then using the known moment functions we can write the agent’s expected utility as:
+\begin{equation}
+    \label{eq:utility_expectation}
+    \mathop{\mathbb{E}}\left[u(y)\right] =  -\mathop{\mathbb{E}}\left[\exp{\left(\rho_0 y\right)}\right] = -\exp{\left(-\rho_0 y_m + \frac{1}{2}\rho_0^2 y_s^2 \right)}
+\end{equation}
+Indirectly, \autoref{eq:utility_expectation} can also be described as: 
+\begin{equation}
+    \nu = y_m - \frac{\rho_0}{2}y_s^2 
+\end{equation}
+\begin{equation}
+    y_s = \frac{y_c-y_m}{\Phi^{-1}(c)}
+\end{equation}
+\begin{equation}
+    \nu = y_m - \frac{1}{2}\frac{\rho_0}{\left(\Phi^{-1}(c)\right)^2} (y_c - y_m)^2 
+\end{equation}
+Finally, by reordering some terms and assigning $w=\frac{\rho_0}{\left(\Phi^{-1}(c)\right)^2}$, which we can interpret as the aversion for financial instability, we derive the social welfare function proposed by \citet{suarez2022} in \autoref{eq:suarez_W}.
+
+The limitations of this function are embedded in its assumptions. Since most GDP growth distributions are not normally distributed this makes the function sensitive to the choice of quantile $c$. Additionally, even if $c$ is chosen correctly, the value for $\rho_0$ and consequently $w$ is up to the policymaker. Nevertheless, this function can still serve as a good basis for policy recommendations since it offers a means to perform a cost-benefit analysis for the effects of macroprudential policy.

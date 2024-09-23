@@ -1,0 +1,47 @@
+% Document options: 
+% preprint:  format the document for submission to Elsevier journals.
+% review 
+% 5p: formats for model 5+ journals. This is always of a two-column style.
+% 3p, 1p
+% authoryear: author-year citation style
+% number, sort&compress
+% longtitle
+% times: loads txfonts.sty, if available in the system to use Times and compatible math fonts.
+% reversenotenum
+% lefttitle
+% endfloat: To place all floats at the end of the document.
+% nonatbib: To unload natbib.sty.
+% doubleblind
+% default: a4paper, 10pt, oneside, onecolumn and preprint.
+
+\documentclass[final,5p,times,twocolumn,authoryear]{elsarticlecustom}
+
+\input{setup}
+\input{Sections/meta}
+% \journal{ }
+
+\begin{document}
+
+\begin{frontmatter}
+\input{Sections/title}
+\input{Sections/abstract}
+\end{frontmatter}
+
+% \tableofcontents
+% \linenumbers
+\input{Sections/s1}
+% \input{Sections/s2}
+% \input{Sections/s3}
+% \input{Sections/s4}
+% \input{Sections/s5}
+% \input{Sections/s6}
+\input{Sections/s7}
+\input{Sections/acknowledge}
+\bibliography{main}
+\appendix
+\input{Sections/a1}
+\input{Sections/a2}
+\input{Sections/a3}
+\input{Sections/a4}
+
+\end{document}

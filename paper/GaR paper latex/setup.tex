@@ -1,0 +1,79 @@
+% % Pages
+% \usepackage{fullpage}
+
+% % Margins
+% \usepackage[top=2.5cm, left=3cm, right=3cm, bottom=4.0cm]{geometry}
+
+% For math and formulas
+\usepackage{amsmath,amssymb, newtxtext, newtxmath}
+
+% Text and Font encoding
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{bm}
+\usepackage{csquotes}
+
+% font format
+\usepackage[scaled=0.86]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% \usepackage{crimson}
+% \renewcommand{\familydefault}{\sfdefault}
+
+% Set spacing
+\usepackage{setspace}
+\setstretch{1}
+
+% Numbering
+\usepackage{enumitem}
+
+% % paragraph styling
+% \usepackage{parskip}
+
+% % set paragraph indentation
+\setlength\parindent{12pt}
+
+% Images
+\usepackage{graphicx}
+% \usepackage{caption}
+
+% Tables
+% \usepackage[xcdraw]{xcolor}
+\usepackage[table,x11names]{xcolor}
+\usepackage{booktabs}
+
+% % text color
+% % \color{black}
+
+% other 
+\usepackage{comment} 
+\usepackage{lipsum}
+
+% \makeatletter
+% % subsection numbering
+% \renewcommand\thesubsection{
+% \arabic{subsection})
+% }
+
+% % we use \prefix@<level> only if it is defined
+% \renewcommand{\@seccntformat}[1]{%
+%   \ifcsname prefix@#1\endcsname
+%     \csname prefix@#1\endcsname
+%   \else
+%     \csname the#1\endcsname\quad
+%   \fi}
+% % define \prefix@section
+% \newcommand\prefix@section{Problem \thesection: }
+% \makeatother
+
+% You might want to define your own abbreviated commands for commonly used terms, e.g.: 
+\newcommand{\kms}{km\,s$^{-1}$}
+\newcommand{\msun}{$M_\odot}
+
+% % Section sizes
+% \usepackage[small]{titlesec}
+
+% Add the date in the title
+\usepackage{etoolbox}
+\patchcmd{\MaketitleBox}{\footnotesize\itshape\elsaddress\par\vskip36pt}{\footnotesize\itshape\elsaddress\par\parbox[b][36pt]{\linewidth}{\vfill\hfill\textnormal{\today}\hfill\null\vfill}}{}{}%
+\patchcmd{\pprintMaketitle}{\footnotesize\itshape\elsaddress\par\vskip36pt}{\footnotesize\itshape\elsaddress\par\parbox[b][36pt]{\linewidth}{\vfill\hfill\textnormal{\today}\hfill\null\vfill}}{}{}%

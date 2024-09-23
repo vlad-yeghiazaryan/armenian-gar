@@ -1,0 +1,36 @@
+\section{Additional Panel and local model estimation results}
+\label{appx:model_results}
+\subsection{Panel model estimation results}
+The full list of countries used in the panel estimation includes Armenia, Australia, Austria, Belgium, Brazil, Chile, Colombia, Croatia, Czech Republic, Denmark, Finland, France, Georgia, Germany, Greece, Hong Kong, China, Hungary, Iceland, India, Ireland, Israel, Italy, Japan, Korea, Republic of, Mexico, Netherlands, New Zealand, Norway, Philippines, Poland, Portugal, Romania, Russian Federation, Singapore, Spain, Sweden, Switzerland, Thailand, Türkiye, United Kingdom and United States.
+\input{Tables/panel_coeffs}
+\begin{figure}
+	\centering 
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/panel_qr_prediction_for_Armenia.png}	
+	\caption{Panel quantile regression one year ahead fitted values of Armenia for different quantiles.} 
+	\label{fig:panel_qr_prediction_for_Armenia}%
+\end{figure}
+
+In \autoref{fig:frontier_boundary} we plot the estimated median and distance-to-tail (Gap) values. We then use the Local Outlier Factor (LOF) algorithm on the data points to compute local densities for each of the points relative to their neighbors. Points with very low density are considered to be outliers (marked in red). Using this density function we derive a boundary that best describes the efficient frontier for our risk (Gap) and reward (median) pairs. Boundary points are marked in orange. By fitting a polynomial onto these points, it is possible to derive an explicit frontier function.
+\begin{figure}
+	\centering 
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/frontier_boundary.png}	
+	\caption{Local Outlier Factor (LOF) boundary based on estimates from 41 countries.} 
+	\label{fig:frontier_boundary}%
+\end{figure}
+
+\subsection{Local model estimation results}
+\input{Tables/local_coeffs}
+\begin{figure}
+	\centering 
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/arm_qr_f_fits.png}	
+	\caption{Local quantile regression one year ahead fitted values of Armenia for different quantiles.} 
+	\label{fig:arm_qr_f_fits}%
+\end{figure}
+
+\autoref{fig:arm_qr_gdp_kde_dist} shows the GDP growth distribution of Armenia conditional on systemic risks in 2024Q1. Instead of using skewed t-distribution as in \autoref{fig:arm_qr_gdp_dist}, a Kernel density-based estimation is used to interpolate the quantiles. Even though it is more sensitive to the choice of the number of quantiles, it does a better job of describing the left tail of the distribution.
+\begin{figure}
+	\centering 
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/arm_qr_gdp_kde_dist.png}	
+	\caption{Conditional GDP growth distribution using non-parametric KDE-based interpolation.} 
+	\label{fig:arm_qr_gdp_kde_dist}%
+\end{figure}

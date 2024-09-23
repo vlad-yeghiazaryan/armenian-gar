@@ -1,0 +1,45 @@
+\section{Macroprudential policy stance}
+\subsection{Distance-to-tail approach}
+\label{sec:dtt}
+The goal of stance assessment is to assist macroprudential policymakers in making informed decisions to manage financial stability. The distance-to-tail approach achieves this by quantifying and differentiating systemic risks in the economy. \autoref{fig:distance_to_tail_decomposition} depicts Armenia's estimated distance-to-tail over time. An increase in this value signals the buildup of financial exposures. We classify systemic risks into financial vulnerabilities, financial stress, liquidity risks, capital risks, and the interactions between these risks. We also separate them from the effects of macroeconomic events.
+\begin{figure*}
+	\centering
+	\includegraphics[width=1\textwidth, angle=0]{Figures/distance_to_tail_decomposition.png}	
+	\caption{Estimated distance-to-tail over time and decomposition of systemic risks. Vertical areas in grey represent economic disturbances.}
+	\label{fig:distance_to_tail_decomposition}%
+\end{figure*}
+\begin{figure*}
+	\centering
+	\includegraphics[width=0.9\textwidth, angle=0]{Figures/distance_to_tail_changes_before_crises.png}	
+	\caption{Changes in distance-to-tail and the buildup of systemic risks before major economic disturbances.}
+	\label{fig:distance_to_tail_changes_before_crises}%
+\end{figure*}
+\begin{figure*}
+	\centering
+	\includegraphics[width=1\textwidth, angle=0]{Figures/distance_to_tail_stance.png}	
+	\caption{Estimated distance-to-tail and the macroprudential stance assessment over time. The boundaries describe the 10th, 30th, 70th, and 90th percentiles of the distance-to-tail distribution.}
+	\label{fig:distance_to_tail_stance}%
+\end{figure*}
+
+The results demonstrate that financial vulnerabilities follow a cyclical pattern, while financial stress tends to appear more abruptly. Liquidity risks are persistent but exhibit slow changes with minimal volatility. Capital risks are more prominent during crisis periods. Additionally, financial intermediaries often hold excess capital after economic downturns, which contributes to a reduction of risks. The interaction between financial vulnerabilities and financial stress has a procyclical behavior, manifesting during financial crises and amplifying existing risks. Macroprudential policy actions mostly contribute to a reduction of risks. Their impact on financial vulnerabilities is much stronger than on financial stress. However, failure to implement loosening measures during crisis periods can heighten risk perception. Finally, the influence of macroeconomic events on systemic risks is minimal, as they tend to shift the entire GDP growth distribution uniformly, showing little heterogeneity in their effects.
+
+To examine the performance of the distance-to-tail metric for crisis periods we compare systemic risks in Armenia before four major economic disturbances in \autoref{fig:distance_to_tail_changes_before_crises}. Prior to the 2007–2009 financial crisis, there was a significant buildup of financial vulnerabilities, along with the accumulation of other risks that could intensify economic downturns. These exposures continued to be prominent during the 2014-2015 Russian oil crisis, accompanied by capital-related risks. Before the Covid-19 shock and the Nagorno-Karabakh war, we observe a steady increase in both financial vulnerabilities and financial stress. Lastly, the period leading up to the Russo-Ukrainian war overlaps with the Nagorno-Karabakh conflict, during which Armenia experienced a downturn in the financial cycle. The interaction terms during this time period capture the heightened uncertainty linked to those downturns.
+
+The distance-to-tail approach uses systemic thresholds to determine the macroprudential stance. The stance metric alongside these thresholds is presented in \autoref{fig:distance_to_tail_stance}. When this value exceeds the 7\% distance-to-tail threshold (the 70th percentile), it signals a relatively loose stance, prompting consideration of tightening measures to maintain it at the neutral level. As of 2024Q1, the metric is at the neutral level, suggesting no immediate need for tightening actions. However, the value exhibits an upward trend, indicating growing risks in the system.
+
+A key limitation of the distance-to-tail approach is that the selected threshold is not tied to a measure of the financial system’s resilience, but rather inferred from systemic risks. To test the reliability and robustness of this threshold we use an alternative methodology to derive it, inspired by modern portfolio theory. Using the estimated median and the distance-to-tail (Gap) from the panel quantile regression, we construct an efficient frontier\footnote{For details on the methodology behind the frontier, see \ref{appx:model_results}} across 41 countries, as shown in \autoref{fig:country_cases_that_shape_the_boundary}. In this context, GDP growth represents each country’s "portfolio," with the median as the expected return and the distance-to-tail as the associated risk. The efficient frontier illustrates that beyond a certain threshold, countries that face additional risk do not generate excess returns in proportion to those risks. If we exclude India this threshold is around 5-6\%, while including India lowers it to approximately 3\%.
+
+\subsection{Suarez welfare approach}
+Unlike the distance-to-tail approach, the \citet{suarez2022} welfare function also considers the median of the distribution, enabling us to account for the costs of the policy. For example, a policy that reduces the median without impacting the tail would be considered unfavorable, despite lowering the distance-to-tail. However, with the welfare function, such a policy would decrease overall utility. In other words, the welfare function favors policies that are capable of improving the tail, without a reduction in the median. As of 2024Q1, the conditional 1-year ahead GDP growth distribution has a median of 5.2\% and a distance-to-tail of 7.3\%. The full distribution is illustrated in \autoref{fig:arm_qr_gdp_dist}.
+
+To present how systemic risks shape the GDP growth distribution, we compare the conditional distributions for 2023Q1 and 2024Q1 in \autoref{fig:arm_dist_optimal_policy_interaction}. Compared to the previous year, the median has decreased by 3.5\%, while the distance-to-tail increased by 4.2\%. \autoref{fig:arm_dist_decomp_diff_2024Q1} further breaks down the factors contributing to this shift. The decline in the median is largely driven by macroeconomic factors, while the widening distance-to-tail reflects heightened uncertainties stemming from rising financial vulnerabilities and the indirect effects of financial stress.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/arm_dist_optimal_policy_interaction.png}	
+	\caption{GDP growth distribution conditional on systemic risks in 2023Q1 and 2024Q1. Optimal policy interaction effects are marked in green.}
+	\label{fig:arm_dist_optimal_policy_interaction}%
+\end{figure}
+
+Finally, we demonstrate how a tightening of macroprudential policy can affect future growth. Estimates suggest that a 1.5-point increase in the MPI would reduce the median by 1\% and shrink the distance-to-tail by 2.19\%, which is also the utility-maximizing policy. This is equivalent to a CCyB tightening of 0.33\%.\footnote{The conversion is performed using a simple formula: $\frac{1.5 \cdot 0.87}{4}$ For details on the “conversion rate” see \ref{appx:w_calibration}}
+
+When comparing the results from both approaches, it is apparent that they provide different conclusions. We do not view one approach as inherently superior to the other, but instead stress the importance of policymakers considering both perspectives. Each approach highlights distinct dimensions of systemic risks and policy impacts, which together provide a more comprehensive understanding of the financial system and the macroprudential stance.
