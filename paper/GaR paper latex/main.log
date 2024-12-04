@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.19)  19 SEP 2024 14:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.19)  11 NOV 2024 02:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1033,11 +1033,11 @@ Package hyperref Info: Link coloring ON on input line 23.
 
  (./Sections/title.tex) (./Sections/abstract.tex
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
-(Font)              scaled to size 8.6pt on input line 1.
+(Font)              scaled to size 8.6pt on input line 9.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 16.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 24.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 8.6pt on input line 16.
+(Font)              scaled to size 8.6pt on input line 24.
 )
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 12.384pt on input line 28.
@@ -1328,7 +1328,7 @@ LaTeX Font Info:    Font shape `LMX/ntxexx/b/n' will be
 (Font)              scaled to size 4.52597pt on input line 28.
 LaTeX Font Info:    Font shape `LMX/ntxexx/b/n' will be
 (Font)              scaled to size 3.41pt on input line 28.
- (./Sections/s1.tex
+ (./Sections/introduction.tex
 
 
 Underfull \vbox (badness 1122) has occurred while \output is active []
@@ -1343,126 +1343,131 @@ Overfull \hbox (1.8232pt too wide) has occurred while \output is active
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
-]) (./Sections/s2.tex
+]
 
-
+) (./Sections/literature.tex
 
 [2]
-<Figures/arm_systemic_risks_aa.png, id=241, 858.8085pt x 353.1594pt>
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+<Figures/arm_systemic_risks_aa.png, id=251, 858.8085pt x 353.1594pt>
 File: Figures/arm_systemic_risks_aa.png Graphic file (type png)
 <use Figures/arm_systemic_risks_aa.png>
-Package pdftex.def Info: Figures/arm_systemic_risks_aa.png  used on input line 27.
+Package pdftex.def Info: Figures/arm_systemic_risks_aa.png  used on input line 31.
 (pdftex.def)             Requested size: 522.0pt x 214.66708pt.
-) (./Sections/s3.tex
+) (./Sections/background.tex
 
-<Figures/arm_MPI_actions.png, id=246, 425.6703pt x 281.1303pt>
+[3]
+<Figures/arm_MPI_actions.png, id=265, 425.6703pt x 281.1303pt>
 File: Figures/arm_MPI_actions.png Graphic file (type png)
 <use Figures/arm_MPI_actions.png>
 Package pdftex.def Info: Figures/arm_MPI_actions.png  used on input line 8.
 (pdftex.def)             Requested size: 234.8984pt x 155.14119pt.
 
 
-[3]
-<Figures/panel_MP_use_TL.png, id=261, 425.6703pt x 281.6121pt>
+
+Underfull \vbox (badness 1253) has occurred while \output is active []
+
+
+
+[4 <./Figures/arm_systemic_risks_aa.png> <./Figures/arm_MPI_actions.png>]
+<Figures/panel_MP_use_TL.png, id=280, 425.6703pt x 281.6121pt>
 File: Figures/panel_MP_use_TL.png Graphic file (type png)
 <use Figures/panel_MP_use_TL.png>
 Package pdftex.def Info: Figures/panel_MP_use_TL.png  used on input line 22.
 (pdftex.def)             Requested size: 234.8984pt x 155.40707pt.
-<Figures/panel_MP_action_decomp.png, id=262, 858.8085pt x 353.8821pt>
+<Figures/panel_MP_action_decomp.png, id=281, 858.8085pt x 353.8821pt>
 File: Figures/panel_MP_action_decomp.png Graphic file (type png)
 <use Figures/panel_MP_action_decomp.png>
 Package pdftex.def Info: Figures/panel_MP_action_decomp.png  used on input line 28.
 (pdftex.def)             Requested size: 522.0pt x 215.10637pt.
 
-Underfull \vbox (badness 2970) has occurred while \output is active []
 
-
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-[4 <./Figures/arm_systemic_risks_aa.png> <./Figures/arm_MPI_actions.png> <./Figures/panel_MP_use_TL.png>]
-<Figures/theory_gdp_unconditional.png, id=284, 1434.0777pt x 711.8595pt>
+<Figures/theory_gdp_unconditional.png, id=290, 1434.0777pt x 711.8595pt>
 File: Figures/theory_gdp_unconditional.png Graphic file (type png)
 <use Figures/theory_gdp_unconditional.png>
 Package pdftex.def Info: Figures/theory_gdp_unconditional.png  used on input line 41.
 (pdftex.def)             Requested size: 234.8984pt x 116.59364pt.
-<Figures/theory_policy.png, id=286, 1434.0777pt x 711.8595pt>
+<Figures/theory_policy.png, id=292, 1434.0777pt x 711.8595pt>
 File: Figures/theory_policy.png Graphic file (type png)
 <use Figures/theory_policy.png>
 Package pdftex.def Info: Figures/theory_policy.png  used on input line 49.
 (pdftex.def)             Requested size: 234.8984pt x 116.59364pt.
-
-
-
-
-[5 <./Figures/panel_MP_action_decomp.png> <./Figures/theory_gdp_unconditional.png>]
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 4.73pt on input line 58.
-) (./Sections/s4.tex
+
+
+[5 <./Figures/panel_MP_use_TL.png>]
+
+) (./Sections/methodology.tex
+Underfull \vbox (badness 1635) has occurred while \output is active []
 
 
 
-[6{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc} <./Figures/theory_policy.png>]
+[6{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc} <./Figures/panel_MP_action_decomp.png> <./Figures/theory_gdp_unconditional.png> <./Figures/theory_policy.png>]
+
+
 Underfull \hbox (badness 2932) in paragraph at lines 41--42
 \T1/phv/m/n/10 i-cally, the Cycle-Based Pol-icy Ad-just-ment $[][]$ and the
  []
 
 
 
+[7]
 
-
-[7]) (./Sections/s5.tex
-<Figures/arm_qr_f_r2.png, id=399, 714.7503pt x 208.8603pt>
+) (./Sections/results.tex
+<Figures/arm_qr_f_r2.png, id=407, 714.7503pt x 208.8603pt>
 File: Figures/arm_qr_f_r2.png Graphic file (type png)
 <use Figures/arm_qr_f_r2.png>
 Package pdftex.def Info: Figures/arm_qr_f_r2.png  used on input line 6.
 (pdftex.def)             Requested size: 522.0pt x 152.54642pt.
-<Figures/panel_r2.png, id=400, 714.7503pt x 208.8603pt>
+<Figures/panel_r2.png, id=408, 714.7503pt x 208.8603pt>
 File: Figures/panel_r2.png Graphic file (type png)
 <use Figures/panel_r2.png>
 Package pdftex.def Info: Figures/panel_r2.png  used on input line 12.
 (pdftex.def)             Requested size: 522.0pt x 152.54642pt.
-<Figures/arm_MPI_cond_coeff_quantiles.png, id=401, 1148.8521pt x 281.3712pt>
+<Figures/arm_MPI_cond_coeff_quantiles.png, id=409, 1148.8521pt x 281.3712pt>
 File: Figures/arm_MPI_cond_coeff_quantiles.png Graphic file (type png)
 <use Figures/arm_MPI_cond_coeff_quantiles.png>
 Package pdftex.def Info: Figures/arm_MPI_cond_coeff_quantiles.png  used on input line 18.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
 
 
+[8] [9 <./Figures/arm_qr_f_r2.png> <./Figures/panel_r2.png> <./Figures/arm_MPI_cond_coeff_quantiles.png>]
 
-
-[8] [9 <./Figures/arm_qr_f_r2.png> <./Figures/panel_r2.png> <./Figures/arm_MPI_cond_coeff_quantiles.png>]) (./Sections/s6.tex
-<Figures/distance_to_tail_decomposition.png, id=452, 852.0633pt x 349.7868pt>
+) (./Sections/discussion.tex
+<Figures/distance_to_tail_decomposition.png, id=458, 852.0633pt x 349.7868pt>
 File: Figures/distance_to_tail_decomposition.png Graphic file (type png)
 <use Figures/distance_to_tail_decomposition.png>
-Package pdftex.def Info: Figures/distance_to_tail_decomposition.png  used on input line 7.
+Package pdftex.def Info: Figures/distance_to_tail_decomposition.png  used on input line 8.
 (pdftex.def)             Requested size: 522.0pt x 214.30367pt.
-<Figures/distance_to_tail_changes_before_crises.png, id=453, 997.5669pt x 349.5459pt>
+<Figures/distance_to_tail_changes_before_crises.png, id=459, 997.5669pt x 349.5459pt>
 File: Figures/distance_to_tail_changes_before_crises.png Graphic file (type png)
 <use Figures/distance_to_tail_changes_before_crises.png>
-Package pdftex.def Info: Figures/distance_to_tail_changes_before_crises.png  used on input line 13.
+Package pdftex.def Info: Figures/distance_to_tail_changes_before_crises.png  used on input line 14.
 (pdftex.def)             Requested size: 469.79681pt x 164.61194pt.
-<Figures/distance_to_tail_stance.png, id=454, 856.1586pt x 349.5459pt>
+<Figures/distance_to_tail_stance.png, id=460, 856.1586pt x 349.5459pt>
 File: Figures/distance_to_tail_stance.png Graphic file (type png)
 <use Figures/distance_to_tail_stance.png>
-Package pdftex.def Info: Figures/distance_to_tail_stance.png  used on input line 19.
+Package pdftex.def Info: Figures/distance_to_tail_stance.png  used on input line 20.
 (pdftex.def)             Requested size: 522.0pt x 213.12134pt.
 
 
-<Figures/arm_dist_optimal_policy_interaction.png, id=465, 1433.8368pt x 711.1368pt>
+[10] [11 <./Figures/distance_to_tail_decomposition.png> <./Figures/distance_to_tail_changes_before_crises.png> <./Figures/distance_to_tail_stance.png>]
+<Figures/arm_dist_optimal_policy_interaction.png, id=492, 1433.8368pt x 711.1368pt>
 File: Figures/arm_dist_optimal_policy_interaction.png Graphic file (type png)
 <use Figures/arm_dist_optimal_policy_interaction.png>
-Package pdftex.def Info: Figures/arm_dist_optimal_policy_interaction.png  used on input line 38.
+Package pdftex.def Info: Figures/arm_dist_optimal_policy_interaction.png  used on input line 39.
 (pdftex.def)             Requested size: 234.8984pt x 116.49696pt.
-) (./Sections/s7.tex
+) (./Sections/conclusion.tex
 
-[10] [11 <./Figures/distance_to_tail_decomposition.png> <./Figures/distance_to_tail_changes_before_crises.png> <./Figures/distance_to_tail_stance.png>]) (./Sections/acknowledge.tex) (./main.bbl
+) (./Sections/acknowledge.tex
 
+[12 <./Figures/arm_dist_optimal_policy_interaction.png>]) (./main.bbl
 LaTeX Font Info:    Trying to load font information for T1+ntxtt on input line 19.
-(/usr/local/texlive/2024/texmf-dist/tex/latex/newtx/t1ntxtt.fd
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/newtx/t1ntxtt.fd
 File: t1ntxtt.fd 2012/04/20 v3.1
 )
 LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
@@ -1474,14 +1479,14 @@ Underfull \hbox (badness 3623) in paragraph at lines 69--73
 
 
 
-[12 <./Figures/arm_dist_optimal_policy_interaction.png>]
+
 Underfull \hbox (badness 10000) in paragraph at lines 200--203
 \T1/ntxtt/m/n/8 worldbank . org / source / global-[]economic-[]monitor-[](gem)$[][]\T1/phv/m/n/8 . ac-
  []
 
 ) (./Sections/a1.tex
 
-) (./Sections/a2.tex (./Tables/panel_coeffs.tex
+[13]) (./Sections/a2.tex (./Tables/panel_coeffs.tex
 Underfull \hbox (badness 10000) in paragraph at lines 53--53
 []|\T1/phv/m/n/10 GDP growth, h=4,
  []
@@ -1492,17 +1497,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 53--53
  []
 
 )
-<Figures/panel_qr_prediction_for_Armenia.png, id=542, 728.2407pt x 317.0244pt>
+<Figures/panel_qr_prediction_for_Armenia.png, id=565, 728.2407pt x 317.0244pt>
 File: Figures/panel_qr_prediction_for_Armenia.png Graphic file (type png)
 <use Figures/panel_qr_prediction_for_Armenia.png>
 Package pdftex.def Info: Figures/panel_qr_prediction_for_Armenia.png  used on input line 8.
 (pdftex.def)             Requested size: 234.8984pt x 102.25772pt.
-<Figures/frontier_boundary.png, id=544, 1072.7277pt x 494.5677pt>
+<Figures/frontier_boundary.png, id=567, 1072.7277pt x 494.5677pt>
 File: Figures/frontier_boundary.png Graphic file (type png)
 <use Figures/frontier_boundary.png>
 Package pdftex.def Info: Figures/frontier_boundary.png  used on input line 16.
 (pdftex.def)             Requested size: 234.8984pt x 108.29207pt.
- (./Tables/local_coeffs.tex
+
+
+
+
+[14 <./Figures/panel_qr_prediction_for_Armenia.png>] (./Tables/local_coeffs.tex
 Underfull \hbox (badness 10000) in paragraph at lines 37--37
 []|\T1/phv/m/n/10 GDP
  []
@@ -1568,139 +1577,127 @@ Overfull \hbox (8.80296pt too wide) in paragraph at lines 37--38
  []
 
 )
-<Figures/arm_qr_f_fits.png, id=545, 728.2407pt x 317.0244pt>
+<Figures/arm_qr_f_fits.png, id=580, 728.2407pt x 317.0244pt>
 File: Figures/arm_qr_f_fits.png Graphic file (type png)
 <use Figures/arm_qr_f_fits.png>
 Package pdftex.def Info: Figures/arm_qr_f_fits.png  used on input line 25.
 (pdftex.def)             Requested size: 234.8984pt x 102.25772pt.
-<Figures/arm_qr_gdp_kde_dist.png, id=548, 1798.8003pt x 714.0276pt>
+<Figures/arm_qr_gdp_kde_dist.png, id=583, 1798.8003pt x 714.0276pt>
 File: Figures/arm_qr_gdp_kde_dist.png Graphic file (type png)
 <use Figures/arm_qr_gdp_kde_dist.png>
 Package pdftex.def Info: Figures/arm_qr_gdp_kde_dist.png  used on input line 33.
 (pdftex.def)             Requested size: 234.8984pt x 93.24086pt.
-) (./Sections/a3.tex
-
-[13 <./Figures/panel_qr_prediction_for_Armenia.png>]
-
-(./Tables/panel_stats.tex
+) (./Sections/a3.tex (./Tables/panel_stats.tex
 Overfull \hbox (11.13963pt too wide) in paragraph at lines 31--32
  [] 
  []
 
-) (./Tables/panel_tf_stats.tex) (./Tables/local_stats.tex)) (./Sections/a4.tex
-<Figures/arm_policy_simulation_interaction.png, id=579, 711.3777pt x 349.7868pt>
+) (./Tables/panel_tf_stats.tex) (./Tables/local_stats.tex
+
+
+
+[15 <./Figures/frontier_boundary.png> <./Figures/arm_qr_f_fits.png> <./Figures/arm_qr_gdp_kde_dist.png>])) (./Sections/a4.tex
+<Figures/arm_policy_simulation_interaction.png, id=608, 711.3777pt x 349.7868pt>
 File: Figures/arm_policy_simulation_interaction.png Graphic file (type png)
 <use Figures/arm_policy_simulation_interaction.png>
 Package pdftex.def Info: Figures/arm_policy_simulation_interaction.png  used on input line 6.
 (pdftex.def)             Requested size: 234.8984pt x 115.49937pt.
-<Figures/arm_ccyb_simulation.png, id=580, 739.0812pt x 341.8371pt>
+<Figures/arm_ccyb_simulation.png, id=609, 739.0812pt x 341.8371pt>
 File: Figures/arm_ccyb_simulation.png Graphic file (type png)
 <use Figures/arm_ccyb_simulation.png>
 Package pdftex.def Info: Figures/arm_ccyb_simulation.png  used on input line 12.
 (pdftex.def)             Requested size: 234.8984pt x 108.64421pt.
-
-
-[14 <./Figures/frontier_boundary.png> <./Figures/arm_qr_f_fits.png> <./Figures/arm_qr_gdp_kde_dist.png>]
-
-<Figures/arm_w_calibration_interaction.png, id=597, 723.6636pt x 342.5598pt>
+<Figures/arm_w_calibration_interaction.png, id=613, 723.6636pt x 342.5598pt>
 File: Figures/arm_w_calibration_interaction.png Graphic file (type png)
 <use Figures/arm_w_calibration_interaction.png>
 Package pdftex.def Info: Figures/arm_w_calibration_interaction.png  used on input line 20.
 (pdftex.def)             Requested size: 234.8984pt x 111.18947pt.
-<Figures/arm_w_dynamic_dist.png, id=599, 823.878pt x 355.8093pt>
+
+
+<Figures/arm_w_dynamic_dist.png, id=615, 823.878pt x 355.8093pt>
 File: Figures/arm_w_dynamic_dist.png Graphic file (type png)
 <use Figures/arm_w_dynamic_dist.png>
 Package pdftex.def Info: Figures/arm_w_dynamic_dist.png  used on input line 28.
 (pdftex.def)             Requested size: 234.8984pt x 101.4447pt.
 ) (./Sections/a5.tex
-<Figures/arm_MPI_tightening_gdp_dist.png, id=600, 1039.2426pt x 280.4076pt>
+<Figures/arm_MPI_tightening_gdp_dist.png, id=616, 1039.2426pt x 280.4076pt>
 File: Figures/arm_MPI_tightening_gdp_dist.png Graphic file (type png)
 <use Figures/arm_MPI_tightening_gdp_dist.png>
 Package pdftex.def Info: Figures/arm_MPI_tightening_gdp_dist.png  used on input line 5.
 (pdftex.def)             Requested size: 522.0pt x 140.84952pt.
-
-Underfull \vbox (badness 1527) has occurred while \output is active []
-
-
-
-[15 <./Figures/arm_policy_simulation_interaction.png> <./Figures/arm_ccyb_simulation.png>]
-<Figures/panel_MP_use_before_crisis.png, id=611, 989.3763pt x 280.4076pt>
+<Figures/panel_MP_use_before_crisis.png, id=617, 989.3763pt x 280.4076pt>
 File: Figures/panel_MP_use_before_crisis.png Graphic file (type png)
 <use Figures/panel_MP_use_before_crisis.png>
 Package pdftex.def Info: Figures/panel_MP_use_before_crisis.png  used on input line 11.
 (pdftex.def)             Requested size: 522.0pt x 147.95212pt.
-<Figures/arm_FCyI_f_coeff_quantiles.png, id=612, 1148.8521pt x 281.3712pt>
+<Figures/arm_FCyI_f_coeff_quantiles.png, id=618, 1148.8521pt x 281.3712pt>
 File: Figures/arm_FCyI_f_coeff_quantiles.png Graphic file (type png)
 <use Figures/arm_FCyI_f_coeff_quantiles.png>
 Package pdftex.def Info: Figures/arm_FCyI_f_coeff_quantiles.png  used on input line 17.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/panel_FCyI_coeff_quantiles.png, id=613, 1148.8521pt x 281.3712pt>
+<Figures/panel_FCyI_coeff_quantiles.png, id=619, 1148.8521pt x 281.3712pt>
 File: Figures/panel_FCyI_coeff_quantiles.png Graphic file (type png)
 <use Figures/panel_FCyI_coeff_quantiles.png>
 Package pdftex.def Info: Figures/panel_FCyI_coeff_quantiles.png  used on input line 23.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/arm_FCI_f_coeff_quantiles.png, id=614, 1148.8521pt x 281.3712pt>
+<Figures/arm_FCI_f_coeff_quantiles.png, id=620, 1148.8521pt x 281.3712pt>
 File: Figures/arm_FCI_f_coeff_quantiles.png Graphic file (type png)
 <use Figures/arm_FCI_f_coeff_quantiles.png>
 Package pdftex.def Info: Figures/arm_FCI_f_coeff_quantiles.png  used on input line 29.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/panel_FCI_coeff_quantiles.png, id=615, 1148.8521pt x 281.3712pt>
+<Figures/panel_FCI_coeff_quantiles.png, id=621, 1148.8521pt x 281.3712pt>
 File: Figures/panel_FCI_coeff_quantiles.png Graphic file (type png)
 <use Figures/panel_FCI_coeff_quantiles.png>
 Package pdftex.def Info: Figures/panel_FCI_coeff_quantiles.png  used on input line 35.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/arm_MPI_f_coeff_quantiles.png, id=616, 1148.8521pt x 281.3712pt>
+<Figures/arm_MPI_f_coeff_quantiles.png, id=622, 1148.8521pt x 281.3712pt>
 File: Figures/arm_MPI_f_coeff_quantiles.png Graphic file (type png)
 <use Figures/arm_MPI_f_coeff_quantiles.png>
 Package pdftex.def Info: Figures/arm_MPI_f_coeff_quantiles.png  used on input line 41.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/panel_MPI_coeff_quantiles.png, id=617, 1148.8521pt x 281.3712pt>
+<Figures/panel_MPI_coeff_quantiles.png, id=623, 1148.8521pt x 281.3712pt>
 File: Figures/panel_MPI_coeff_quantiles.png Graphic file (type png)
 <use Figures/panel_MPI_coeff_quantiles.png>
 Package pdftex.def Info: Figures/panel_MPI_coeff_quantiles.png  used on input line 47.
 (pdftex.def)             Requested size: 522.0pt x 127.84807pt.
-<Figures/arm_qr_gdp_dist.png, id=618, 1798.8003pt x 714.0276pt>
+<Figures/arm_qr_gdp_dist.png, id=624, 1798.8003pt x 714.0276pt>
 File: Figures/arm_qr_gdp_dist.png Graphic file (type png)
 <use Figures/arm_qr_gdp_dist.png>
 Package pdftex.def Info: Figures/arm_qr_gdp_dist.png  used on input line 53.
 (pdftex.def)             Requested size: 522.0pt x 207.20433pt.
-<Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png, id=619, 1064.0553pt x 349.5459pt>
+<Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png, id=625, 1064.0553pt x 349.5459pt>
 File: Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png Graphic file (type png)
 <use Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png>
 Package pdftex.def Info: Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png  used on input line 59.
 (pdftex.def)             Requested size: 522.0pt x 171.487pt.
-<Figures/country_cases_that_shape_the_boundary.png, id=620, 1072.7277pt x 494.3268pt>
+<Figures/country_cases_that_shape_the_boundary.png, id=626, 1072.7277pt x 494.3268pt>
 File: Figures/country_cases_that_shape_the_boundary.png Graphic file (type png)
 <use Figures/country_cases_that_shape_the_boundary.png>
 Package pdftex.def Info: Figures/country_cases_that_shape_the_boundary.png  used on input line 65.
 (pdftex.def)             Requested size: 522.0pt x 240.54773pt.
 )
 
-
-
-[16
-
- <./Figures/arm_w_calibration_interaction.png> <./Figures/arm_w_dynamic_dist.png>] [17 <./Figures/arm_MPI_tightening_gdp_dist.png> <./Figures/panel_MP_use_before_crisis.png> <./Figures/arm_FCyI_f_coeff_quantiles.png> <./Figures/panel_FCyI_coeff_quantiles.png>] [18 <./Figures/arm_FCI_f_coeff_quantiles.png> <./Figures/panel_FCI_coeff_quantiles.png> <./Figures/arm_MPI_f_coeff_quantiles.png> <./Figures/panel_MPI_coeff_quantiles.png>] [19 <./Figures/arm_qr_gdp_dist.png> <./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png>] [20 <./Figures/country_cases_that_shape_the_boundary.png>] (./main.aux)
+[16 <./Figures/arm_policy_simulation_interaction.png> <./Figures/arm_ccyb_simulation.png> <./Figures/arm_w_calibration_interaction.png> <./Figures/arm_w_dynamic_dist.png>] [17 <./Figures/arm_MPI_tightening_gdp_dist.png> <./Figures/panel_MP_use_before_crisis.png> <./Figures/arm_FCyI_f_coeff_quantiles.png> <./Figures/panel_FCyI_coeff_quantiles.png>] [18 <./Figures/arm_FCI_f_coeff_quantiles.png> <./Figures/panel_FCI_coeff_quantiles.png> <./Figures/arm_MPI_f_coeff_quantiles.png> <./Figures/panel_MPI_coeff_quantiles.png>] [19 <./Figures/arm_qr_gdp_dist.png> <./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png>] [20 <./Figures/country_cases_that_shape_the_boundary.png>] (./main.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2020/03/25>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 343D22FED98A50B82870A19043D4D165;5914.
+(rerunfilecheck)             Checksum: EF03F83244CB58FB9DC7D9DBF81620F3;5668.
  ) 
 Here is how much of TeX's memory you used:
- 19288 strings out of 473579
- 303614 string characters out of 5728228
- 886865 words of memory out of 5000000
+ 19289 strings out of 473579
+ 304072 string characters out of 5728228
+ 867865 words of memory out of 5000000
  41586 multiletter control sequences out of 15000+600000
  679321 words of font info for 252 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 80i,15n,87p,1618b,732s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 80i,15n,87p,1618b,571s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/NewTXMI.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/NewTXMI5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/NewTXMI7.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/txexs.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/txmiaX.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/txsym.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/txsys.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/newtx/ztmr.pfb>
-Output written on main.pdf (20 pages, 9530177 bytes).
+Output written on main.pdf (20 pages, 9533034 bytes).
 PDF statistics:
- 745 PDF objects out of 1000 (max. 8388607)
- 628 compressed objects within 7 object streams
- 159 named destinations out of 1000 (max. 500000)
+ 758 PDF objects out of 1000 (max. 8388607)
+ 641 compressed objects within 7 object streams
+ 160 named destinations out of 1000 (max. 500000)
  409 words of extra memory for PDF output out of 10000 (max. 10000000)
 
