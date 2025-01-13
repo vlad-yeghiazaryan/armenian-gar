@@ -33,12 +33,12 @@ A key limitation of the distance-to-tail approach is that the selected threshold
 \subsection{Suarez welfare approach}
 Unlike the distance-to-tail approach, the \citet{suarez2022} welfare function also considers the median of the distribution, enabling us to account for the costs of the policy. For example, a policy that reduces the median without impacting the tail would be considered unfavorable, despite lowering the distance-to-tail. However, with the welfare function, such a policy would decrease overall utility. In other words, the welfare function favors policies that are capable of improving the tail, without a reduction in the median. As of 2024Q1, the conditional 1-year ahead GDP growth distribution has a median of 5.2\% and a distance-to-tail of 7.3\%. The full distribution is illustrated in \autoref{fig:arm_qr_gdp_dist}.
 
-To present how systemic risks shape the GDP growth distribution, we compare the conditional distributions for 2023Q1 and 2024Q1 in \autoref{fig:arm_dist_optimal_policy_interaction}. Compared to the previous year, the median has decreased by 3.5\%, while the distance-to-tail increased by 4.2\%. \autoref{fig:arm_dist_decomp_diff_2024Q1} further breaks down the factors contributing to this shift. The decline in the median is largely driven by macroeconomic factors, while the widening distance-to-tail reflects heightened uncertainties stemming from rising financial vulnerabilities and the indirect effects of financial stress.
+To present how systemic risks shape the GDP growth distribution, we compare the conditional distributions for 2023Q1 and 2024Q1 in \autoref{fig:arm_dist_optimal_policy}. Compared to the previous year, the median has decreased by 3.5\%, while the distance-to-tail increased by 4.2\%. \autoref{fig:arm_dist_decomp_diff_2024Q1} further breaks down the factors contributing to this shift. The decline in the median is largely driven by macroeconomic factors, while the widening distance-to-tail reflects heightened uncertainties stemming from rising financial vulnerabilities and the indirect effects of financial stress.
 \begin{figure}
 	\centering
-	\includegraphics[width=0.45\textwidth, angle=0]{Figures/arm_dist_optimal_policy_interaction.png}	
+	\includegraphics[width=0.45\textwidth, angle=0]{Figures/arm_dist_optimal_policy.png}	
 	\caption{GDP growth distribution conditional on systemic risks in 2023Q1 and 2024Q1. Optimal policy interaction effects are marked in green.}
-	\label{fig:arm_dist_optimal_policy_interaction}%
+	\label{fig:arm_dist_optimal_policy}%
 \end{figure}
 
 Finally, we demonstrate how a tightening of macroprudential policy can affect future growth. Estimates suggest that a 1.5-point increase in the MPI would reduce the median by 1\% and shrink the distance-to-tail by 2.19\%, which is also the utility-maximizing policy. This is equivalent to a CCyB tightening of 0.33\%.\footnote{The conversion is performed using a simple formula: $\frac{1.5 \cdot 0.87}{4}$ For details on the “conversion rate” see \ref{appx:w_calibration}}
