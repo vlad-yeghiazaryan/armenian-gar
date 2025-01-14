@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1736422742.48017 "main.aux" "main.bbl" "main" 1736423344.51926 0
+["bibtex main"] 1736422742.48017 "main.aux" "main.bbl" "main" 1736849131.37158 0
   "./elsarticle-harv.bst" 1726653686 30002 8c0c5833f37bea3ec214cf315a72975d ""
   "./main.bib" 1726733451.05432 10044 ff8978bae4b664e7c5e1af8ce2aae8c0 ""
-  "main.aux" 1736423344.18875 26247 e850f34df8d7a99bad1686f53e894c83 "pdflatex"
+  "main.aux" 1736849131.06175 26247 e850f34df8d7a99bad1686f53e894c83 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1736423328.78147 "/Users/victoryerz/Desktop/GaR-project/paper/GaR paper latex/main.tex" "main.pdf" "main" 1736423344.51947 0
+["pdflatex"] 1736849116.03817 "/Users/victoryerz/Desktop/GaR-project/paper/GaR paper latex/main.tex" "main.pdf" "main" 1736849131.37171 0
   "/Users/victoryerz/Desktop/GaR-project/paper/GaR paper latex/main.tex" 1731240474.59367 1187 891c8339d7af2d2ab339a38fcb1eb357 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc" 1422827479 2083 60e36f8eac802fcaf19eabe2633b406e ""
@@ -204,7 +204,7 @@
   "Figures/arm_MPI_f_coeff_quantiles.png" 1726653686 289653 da9deaef0c23cb219d3694a5fe89fd4d ""
   "Figures/arm_MPI_tightening_gdp_dist.png" 1726653686 215483 892b60f11be02cb74da16399a59ddf34 ""
   "Figures/arm_ccyb_simulation.png" 1726653688 258716 de7fae632bdddc8fb403f29ff6ae372d ""
-  "Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png" 1726653688 328583 debe42bec5301064b331d8631ffce043 ""
+  "Figures/arm_dist_decomp_diff_2024Q1.png" 1736849020.25124 328583 debe42bec5301064b331d8631ffce043 ""
   "Figures/arm_dist_optimal_policy.png" 1734509428.60271 731563 6ca9ea518628d0427003fde6b5bef5fe ""
   "Figures/arm_policy_simulation_interaction.png" 1726653688 220859 11d5466ece94f042935db99b8e9c9751 ""
   "Figures/arm_qr_f_fits.png" 1726653688 793661 5d8c01a4f6efbb5cbb42e109b9d46b88 ""
@@ -233,7 +233,7 @@
   "Sections/a2.tex" 1726653686 2769 4cb49d37e55e7792efd4ce62260f700a ""
   "Sections/a3.tex" 1726653686 633 2593306cf64dee8755a3f7c823e8eb71 ""
   "Sections/a4.tex" 1726732511.98384 3667 2e38ad38bccb8d7940ea65db4e509378 ""
-  "Sections/a5.tex" 1726727030.40972 3594 4b221f7f7d83f04a660bf7572d5f13a6 ""
+  "Sections/a5.tex" 1736849126.15447 3586 c5ad8fdce231a8de168a51ba2dae4222 ""
   "Sections/abstract.tex" 1736421248.33884 2369 35a570ec6aecdbcb0624359568e20a52 ""
   "Sections/acknowledge.tex" 1730974240.4174 477 6b3a99a6ad0607d8ec6e69da19e8090e ""
   "Sections/background.tex" 1731240298.4808 13018 26f9bdaf87f9cd6d1300304742150a17 ""
@@ -251,10 +251,10 @@
   "Tables/panel_stats.tex" 1726653686 1533 ed567c9df244d619a245ed600ffacb0d ""
   "Tables/panel_tf_stats.tex" 1726653686 1827 542c1c3537296d28a779159c9e43965e ""
   "elsarticlecustom.cls" 1726653686 44877 9c28d2ffd762704fb3c3cb948d147c3a ""
-  "main.aux" 1736423344.18875 26247 e850f34df8d7a99bad1686f53e894c83 "pdflatex"
+  "main.aux" 1736849131.06175 26247 e850f34df8d7a99bad1686f53e894c83 "pdflatex"
   "main.bbl" 1736422742.5865 13117 8abbd25c10e4109aef2eb8c10e8b97a9 "bibtex main"
-  "main.out" 1736423344.19138 5668 ef03f83244cb58fb9dc7d9dbf81620f3 "pdflatex"
-  "main.spl" 1736423328.96339 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.out" 1736849131.06385 5668 ef03f83244cb58fb9dc7d9dbf81620f3 "pdflatex"
+  "main.spl" 1736849116.21484 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   "main.tex" 1731240474.59367 1187 891c8339d7af2d2ab339a38fcb1eb357 ""
   "setup.tex" 1726690432.17822 1944 e4ec35540f5261bf7d353f94e6198f56 ""
   (generated)

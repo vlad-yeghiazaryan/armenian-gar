@@ -784,11 +784,11 @@ INPUT ./Figures/arm_qr_gdp_dist.png
 INPUT ./Figures/arm_qr_gdp_dist.png
 INPUT ./Figures/arm_qr_gdp_dist.png
 INPUT ./Figures/arm_qr_gdp_dist.png
-INPUT ./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png
-INPUT ./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png
-INPUT ./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png
-INPUT ./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png
-INPUT ./Figures/arm_dist_decomp_diff_2024Q1(t|t-1).png
+INPUT ./Figures/arm_dist_decomp_diff_2024Q1.png
+INPUT ./Figures/arm_dist_decomp_diff_2024Q1.png
+INPUT ./Figures/arm_dist_decomp_diff_2024Q1.png
+INPUT ./Figures/arm_dist_decomp_diff_2024Q1.png
+INPUT ./Figures/arm_dist_decomp_diff_2024Q1.png
 INPUT ./Figures/country_cases_that_shape_the_boundary.png
 INPUT ./Figures/country_cases_that_shape_the_boundary.png
 INPUT ./Figures/country_cases_that_shape_the_boundary.png
