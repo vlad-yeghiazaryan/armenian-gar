@@ -1,0 +1,243 @@
+\begin{thebibliography}{36}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Adrian et~al.(2019)Adrian, Boyarchenko, and Giannone]{adrian_2019}
+Tobias Adrian, Nina Boyarchenko, and Domenico Giannone.
+\newblock Vulnerable growth.
+\newblock \emph{American Economic Review}, 109\penalty0 (4):\penalty0
+  1263-89, April 2019.
+\newblock \doi{10.1257/aer.20161923}.
+
+\bibitem[Aikman et~al.(2019)Aikman, Bridges, Hacioglu~Hoke, O'Neill, and
+  Raja]{aikman2019}
+David Aikman, Jonathan Bridges, Sinem Hacioglu~Hoke, Cian O'Neill, and Akash
+  Raja.
+\newblock {Credit, capital and crises: a GDP-at-Risk approach}.
+\newblock \emph{Staff Working Papers}, \penalty0 (824), September 2019.
+
+\bibitem[Alam et~al.(2019)Alam, Alter, Eiseman, Gelos, Kang, Narita, Nier, and
+  Wang]{alam2019}
+Zohair Alam, Adrian Alter, Jesse Eiseman, R.~Gelos, Heedon Kang, Machiko
+  Narita, Erlend Nier, and Naixi Wang.
+\newblock Digging deeper--evidence on the effects of macroprudential policies
+  from a new database.
+\newblock \emph{IMF Working Papers}, 19:\penalty0 1, 2019.
+\newblock \doi{10.5089/9781498302708.001}.
+
+\bibitem[BIS(2010)]{basel2010}
+BIS.
+\newblock Guidance for national authorities operating the countercyclical
+  capital buffer.
+\newblock Bank for International Settlements, 2010.
+
+\bibitem[BIS(2024{\natexlab{a}})]{CBPOL}
+BIS.
+\newblock Policy rates, bis ws\_cbpol $1.0$", 2024{\natexlab{a}}.
+\newblock URL \url{https://data.bis.org/topics/CBPOL/data}.
+\newblock Accessed on 30 June 2024.
+
+\bibitem[BIS(2024{\natexlab{b}})]{CREDIT_GAPS}
+BIS.
+\newblock Credit-to-gdp gaps, bis ws\_credit\_gap $1.0$, 2024{\natexlab{b}}.
+\newblock URL \url{https://data.bis.org/topics/CREDIT_GAPS/data}.
+\newblock Accessed on 28 June 2024.
+
+\bibitem[BIS(2024{\natexlab{c}})]{DSR}
+BIS.
+\newblock Debt service ratios, bis ws\_dsr $1.0$, 2024{\natexlab{c}}.
+\newblock URL \url{https://data.bis.org/topics/DSR/data}.
+\newblock Accessed on 28 June 2024.
+
+\bibitem[BIS(2024{\natexlab{d}})]{RPP}
+BIS.
+\newblock Residential property prices, bis ws\_spp $1.0$, 2024{\natexlab{d}}.
+\newblock URL \url{https://data.bis.org/topics/RPP/data}.
+\newblock Accessed on 28 June 2024.
+
+\bibitem[Boar et~al.(2017)Boar, Gambacorta, Lombardo, and Luiz
+  Pereira~da]{boar_2017}
+Codruta Boar, Leonardo Gambacorta, Giovanni Lombardo, and Silva Luiz
+  Pereira~da.
+\newblock What are the effects of macroprudential policies on macroeconomic
+  performance.
+\newblock \emph{BIS Quarterly Review}, 09 2017.
+
+\bibitem[Cardarelli et~al.(2011)Cardarelli, Elekdag, and Lall]{Cardarelli_2011}
+Roberto Cardarelli, Selim Elekdag, and Subir Lall.
+\newblock Financial stress and economic contractions.
+\newblock \emph{Journal of Financial Stability}, 7\penalty0 (2):\penalty0
+  78--97, 2011.
+\newblock ISSN 1572-3089.
+\newblock \doi{10.1016/j.jfs.2010.01.005}.
+
+\bibitem[CBA(2024)]{cba2024}
+CBA.
+\newblock Statistics, 2024.
+\newblock URL \url{https://www.cba.am/en/SitePages/statintroduction.aspx}.
+\newblock Accessed on 28 June 2024.
+
+\bibitem[Cecchetti and Suarez(2021)]{cecchetti_2021}
+Stephen~G. Cecchetti and Javier Suarez.
+\newblock On the stance of macroprudential policy.
+\newblock \emph{SSRN Electronic Journal}, 2021.
+\newblock \doi{10.2139/ssrn.3975941}.
+
+\bibitem[CNB(2023)]{cnb2023}
+CNB.
+\newblock The cnb's approach to setting the countercyclical capital buffer.
+\newblock Czech National Bank, 2023.
+
+\bibitem[ESRB(2018)]{esrb2018}
+ESRB.
+\newblock A review of macroprudential policy in the eu in 2017.
+\newblock Technical report, European Systemic Risk Board, Frankfurt a. M.,
+  2018.
+
+\bibitem[ESRB(2019)]{esrb2019}
+ESRB.
+\newblock Features of a macroprudential stance: initial considerations.
+\newblock Technical report, European Systemic Risk Board, Frankfurt a. M.,
+  2019.
+
+\bibitem[ESRB(2021)]{esrb2021}
+ESRB.
+\newblock Report of the expert group on macroprudential stance - phase ii
+  (implementation).
+\newblock Technical report, European Systemic Risk Board, Frankfurt a. M.,
+  2021.
+
+\bibitem[ESRB(2024)]{esrb2024}
+ESRB.
+\newblock Improvements to the esrb macroprudential stance framework.
+\newblock Technical report, European Systemic Risk Board, Frankfurt a. M.,
+  2024.
+
+\bibitem[Galati and Moessner(2013)]{galati2013}
+Gabriele Galati and Richhild Moessner.
+\newblock Macroprudential policy - a literature review.
+\newblock \emph{Journal of Economic Surveys}, 27\penalty0 (5):\penalty0
+  846--878, 2013.
+\newblock \doi{10.1111/j.1467-6419.2012.00729.x}.
+
+\bibitem[Galán(2020)]{galan2020}
+Jorge~E. Galán.
+\newblock The benefits are at the tail: Uncovering the impact of
+  macroprudential policy on growth-at-risk.
+\newblock \emph{Journal of Financial Stability}, page 100831, 11 2020.
+\newblock \doi{10.1016/j.jfs.2020.100831}.
+
+\bibitem[Giot and Laurent(2003)]{giot2003}
+Pierre Giot and Sébastien Laurent.
+\newblock Value-at-risk for long and short trading positions.
+\newblock \emph{Journal of Applied Econometrics}, 18\penalty0 (6):\penalty0
+  641--663, 2003.
+\newblock \doi{10.1002/jae.710}.
+
+\bibitem[Hollo et~al.(2012)Hollo, Kremer, and Lo~Duca]{hollo2012}
+Daniel Hollo, Manfred Kremer, and Marco Lo~Duca.
+\newblock Ciss -- a composite indicator of systemic stress in the financial
+  system.
+\newblock ECB Working Paper 1426, European Central Bank (ECB), Frankfurt, 2012.
+
+\bibitem[IMF(2024)]{ifs2024}
+IMF.
+\newblock International financial statistics, 2024.
+
+\bibitem[Jiménez et~al.(2017)Jiménez, Ongena, Peydró, and
+  Saurina]{jimnez2017}
+Gabriel Jiménez, Steven Ongena, José-Luis Peydró, and Jesús Saurina.
+\newblock Macroprudential policy, countercyclical bank capital buffers, and
+  credit supply: Evidence from the spanish dynamic provisioning experiments.
+\newblock \emph{Journal of Political Economy}, 125:\penalty0 2126--2177, 12
+  2017.
+\newblock \doi{10.1086/694289}.
+
+\bibitem[Kipriyanov(2022)]{kipriyanov_2022}
+Aleksei Kipriyanov.
+\newblock Comparison of models for growth-at-risk forecasting.
+\newblock \emph{Russian journal of money and finance}, 81:\penalty0 23--45, 03
+  2022.
+\newblock \doi{10.31477/rjmf.202201.23}.
+
+\bibitem[Koenker and Bassett(1978)]{koenker_1978_regression}
+Roger Koenker and Gilbert Bassett.
+\newblock Regression quantiles.
+\newblock \emph{Econometrica}, 46:\penalty0 33, 01 1978.
+\newblock \doi{10.2307/1913643}.
+
+\bibitem[Koop and Korobilis(2013)]{koop_2013}
+Gary Koop and Dimitris Korobilis.
+\newblock A new index of financial conditions.
+\newblock \emph{SSRN Electronic Journal}, 2013.
+\newblock \doi{10.2139/ssrn.2374980}.
+
+\bibitem[Mack(2021)]{mack2021}
+Sebastian Mack.
+\newblock Never waste a good crisis: European banking regulation in the
+  pandemic.
+\newblock \emph{Policy Brief}, 2021.
+
+\bibitem[Navajas and Thegeya(2024)]{fsi2024}
+Matias~Costa Navajas and Aaron Thegeya.
+\newblock Financial soundness indicators and banking crises, 2024.
+
+\bibitem[Pla{\v{s}}il et~al.(2014)Pla{\v{s}}il, Seidler, Hlav{\'a}{\v{c}}, and
+  Konecny]{plasil2014}
+Miroslav Pla{\v{s}}il, Jakub Seidler, Petr Hlav{\'a}{\v{c}}, and Tomas Konecny.
+\newblock An indicator of the financial cycle in the czech economy.
+\newblock \emph{Czech National Bank}, pages 118--127, 2014.
+
+\bibitem[Prasad et~al.(2019)Prasad, Elekdag, Jeasakul, Lafarguette, Alter,
+  Xiaochen~Feng, and Wang]{imf_gar_2019}
+Ananthakrishnan Prasad, Selim Elekdag, Phakawa Jeasakul, Romain Lafarguette,
+  Adrian Alter, Alan Xiaochen~Feng, and Changchun Wang.
+\newblock Growth at risk: Concept and application in imf country surveillance.
+\newblock \emph{IMF Working Papers}, 19:\penalty0 1, 2019.
+\newblock \doi{10.5089/9781484397015.001}.
+
+\bibitem[Schmitz et~al.(2022)Schmitz, Posch, Strobl, Note, and
+  Nationalbank]{schmitz2022eu}
+Stefan~W Schmitz, Michaela Posch, Peter Strobl, SUERF~Policy Note, and
+  Oesterreichische Nationalbank.
+\newblock The eu macroprudential review should prioritize removing regulatory
+  overlaps and increasing the flexibility of the ccyb.
+\newblock \emph{SUERF Policy Note}, 2022.
+
+\bibitem[Stojkov(2020)]{stojkov2020}
+Katarina Stojkov.
+\newblock Different approaches to implementing a countercyclical capital
+  buffer.
+\newblock \emph{Reserve Bank of Australia Bulletin}, pages 113--121, 2020.
+
+\bibitem[Suarez(2022)]{suarez2022}
+Javier Suarez.
+\newblock Growth-at-risk and macroprudential policy design.
+\newblock \emph{Journal of Financial Stability}, 60:\penalty0 101008, 2022.
+\newblock ISSN 1572-3089.
+\newblock \doi{10.1016/j.jfs.2022.101008}.
+
+\bibitem[Szabo(2020)]{szabo2020}
+Milan Szabo.
+\newblock {Growth-at-Risk: Bayesian Approach}.
+\newblock Working Papers 2020/3, Czech National Bank, 2020.
+
+\bibitem[World\;Bank(2024)]{gem2024}
+World\;Bank.
+\newblock Global economic monitor, 2024.
+\newblock URL
+  \url{https://databank.worldbank.org/source/global-economic-monitor-(gem)}.
+\newblock Accessed on 28 June 2024.
+
+\bibitem[Òscar Jordà et~al.(2015)Òscar Jordà, Schularick, and
+  Taylor]{jorda2015}
+Òscar Jordà, Moritz Schularick, and Alan~M. Taylor.
+\newblock Leveraged bubbles.
+\newblock \emph{Journal of Monetary Economics}, 76:\penalty0 S1--S20, 2015.
+\newblock ISSN 0304-3932.
+\newblock \doi{10.1016/j.jmoneco.2015.08.005}.
+
+\end{thebibliography}
