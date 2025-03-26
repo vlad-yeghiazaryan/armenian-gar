@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.3.14)  20 MAR 2025 15:52
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.3.14)  26 MAR 2025 15:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -453,27 +453,27 @@ File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 [5]
 
 [6]
+
+[7]
 File: ../Figures/arm_systemic_risks_aa.png Graphic file (type bmp)
 <../Figures/arm_systemic_risks_aa.png>
 
 
-[7]
-
 [8]
 File: ../Figures/arm_MPI_actions.png Graphic file (type bmp)
 <../Figures/arm_MPI_actions.png>
+
+
+[9]
 File: ../Figures/arm_MPI_tightening_gdp_dist.png Graphic file (type bmp)
 <../Figures/arm_MPI_tightening_gdp_dist.png>
 
 
-[9]
+[10]
 File: ../Figures/panel_MP_use_TL.png Graphic file (type bmp)
 <../Figures/panel_MP_use_TL.png>
 File: ../Figures/panel_MP_action_decomp.png Graphic file (type bmp)
 <../Figures/panel_MP_action_decomp.png>
-
-
-[10]
 File: ../Figures/panel_MP_use_before_crisis.png Graphic file (type bmp)
 <../Figures/panel_MP_use_before_crisis.png>
 
@@ -490,9 +490,9 @@ File: ../Figures/theory_policy.png Graphic file (type bmp)
 
 [13]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 182.
+(Font)              <8> on input line 184.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 182.
+(Font)              <6> on input line 184.
 
 
 [14]
@@ -504,20 +504,19 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 [17]
 
 [18]
+
+[19]
 File: ../Figures/arm_qr_f_r2.png Graphic file (type bmp)
 <../Figures/arm_qr_f_r2.png>
 File: ../Figures/panel_r2.png Graphic file (type bmp)
 <../Figures/panel_r2.png>
 
 
-[19]
-
 [20]
-File: ../Figures/arm_MPI_f_coeff_quantiles.png Graphic file (type bmp)
-<../Figures/arm_MPI_f_coeff_quantiles.png>
-
 
 [21]
+File: ../Figures/arm_MPI_f_coeff_quantiles.png Graphic file (type bmp)
+<../Figures/arm_MPI_f_coeff_quantiles.png>
 File: ../Figures/panel_MPI_coeff_quantiles.png Graphic file (type bmp)
 <../Figures/panel_MPI_coeff_quantiles.png>
 File: ../Figures/arm_MPI_cond_coeff_quantiles.png Graphic file (type bmp)
@@ -547,14 +546,13 @@ File: ../Figures/arm_dist_optimal_policy.png Graphic file (type bmp)
 <../Figures/arm_dist_optimal_policy.png>
 File: ../Figures/arm_dist_decomp_diff_2024Q1.png Graphic file (type bmp)
 <../Figures/arm_dist_decomp_diff_2024Q1.png>
-
-
-[27]
 File: ../Figures/policy_simulation.png Graphic file (type bmp)
 <../Figures/policy_simulation.png>
 File: ../Figures/policy_simulation_decomposition.png Graphic file (type bmp)
 <../Figures/policy_simulation_decomposition.png>
 
+
+[27]
 
 [28]
 
@@ -576,7 +574,7 @@ File: ../Figures/arm_ccyb_simulation.png Graphic file (type bmp)
 File: ../Figures/arm_w_calibration_interaction.png Graphic file (type bmp)
 <../Figures/arm_w_calibration_interaction.png>
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 574.
+(Font)              <10.95> on input line 576.
 
 
 [35]
