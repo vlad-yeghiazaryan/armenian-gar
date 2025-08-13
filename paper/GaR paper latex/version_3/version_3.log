@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.3.14)  5 AUG 2025 14:19
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.3.14)  13 AUG 2025 15:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -456,9 +456,9 @@ File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 
 [7]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 120.
+(Font)              <8> on input line 119.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 120.
+(Font)              <6> on input line 119.
 
 
 [8]
@@ -505,43 +505,29 @@ File: ../Figures/theory_policy.png Graphic file (type bmp)
 [18]
 
 [19]
+
+[20]
 File: ../Figures/arm_qr_f_r2.png Graphic file (type bmp)
 <../Figures/arm_qr_f_r2.png>
 File: ../Figures/panel_r2.png Graphic file (type bmp)
 <../Figures/panel_r2.png>
 
 
-[20]
-
-LaTeX Warning: Reference `fig:arm_FCyI_f_coeff_quantiles' on page 21 undefined on input line 427.
-
-
-LaTeX Warning: Reference `fig:panel_FCyI_coeff_quantiles' on page 21 undefined on input line 427.
-
-
-LaTeX Warning: Reference `appx:additional_figures' on page 21 undefined on input line 427.
-
-
-
 [21]
 
-LaTeX Warning: Reference `fig:arm_FCI_f_coeff_quantiles' on page 22 undefined on input line 431.
-
-
-LaTeX Warning: Reference `fig:panel_FCI_coeff_quantiles' on page 22 undefined on input line 431.
-
+[22]
 File: ../Figures/arm_MPI_f_coeff_quantiles.png Graphic file (type bmp)
 <../Figures/arm_MPI_f_coeff_quantiles.png>
-
-
-[22]
 File: ../Figures/panel_MPI_coeff_quantiles.png Graphic file (type bmp)
 <../Figures/panel_MPI_coeff_quantiles.png>
+
+
+[23]
 File: ../Figures/arm_MPI_cond_coeff_quantiles.png Graphic file (type bmp)
 <../Figures/arm_MPI_cond_coeff_quantiles.png>
 
 
-[23]
+[24]
 File: ../Figures/distance_to_tail_decomposition.png Graphic file (type bmp)
 <../Figures/distance_to_tail_decomposition.png>
 File: ../Figures/distance_to_tail_changes_before_crises.png Graphic file (type bmp)
@@ -550,55 +536,51 @@ File: ../Figures/distance_to_tail_stance.png Graphic file (type bmp)
 <../Figures/distance_to_tail_stance.png>
 
 
-[24]
-
 [25]
-File: ../Figures/frontier_boundary.png Graphic file (type bmp)
-<../Figures/frontier_boundary.png>
-
 
 [26]
+File: ../Figures/frontier_boundary.png Graphic file (type bmp)
+<../Figures/frontier_boundary.png>
 File: ../Figures/country_cases_that_shape_the_boundary.png Graphic file (type bmp)
 <../Figures/country_cases_that_shape_the_boundary.png>
 
 
 [27]
 
-LaTeX Warning: Reference `fig:arm_qr_gdp_dist' on page 28 undefined on input line 524.
-
+[28]
 File: ../Figures/arm_dist_optimal_policy.png Graphic file (type bmp)
 <../Figures/arm_dist_optimal_policy.png>
 File: ../Figures/arm_dist_decomp_diff_2024Q1.png Graphic file (type bmp)
 <../Figures/arm_dist_decomp_diff_2024Q1.png>
 
 
-[28]
+[29]
 File: ../Figures/policy_simulation.png Graphic file (type bmp)
 <../Figures/policy_simulation.png>
 File: ../Figures/policy_simulation_decomposition.png Graphic file (type bmp)
 <../Figures/policy_simulation_decomposition.png>
 
 
-[29]
-
 [30]
 
-[31] (./version_3.bbl
+[31]
+
+[32] (./version_3.bbl
 Missing character: There is no – ("2013) in font ec-lmr12!
 Missing character: There is no ’ ("2019) in font ec-lmr12!
 Missing character: There is no ’ ("2019) in font ec-lmr12!
 
 
-[32]
+[33]
 Missing character: There is no – ("2013) in font ec-lmr12!
 Missing character: There is no – ("2013) in font ec-lmr12!
 
 
-[33])
-
-[34]
+[34])
 
 [35]
+
+[36]
 File: ../Figures/arm_policy_simulation_interaction.png Graphic file (type bmp)
 <../Figures/arm_policy_simulation_interaction.png>
 File: ../Figures/arm_ccyb_simulation.png Graphic file (type bmp)
@@ -606,15 +588,15 @@ File: ../Figures/arm_ccyb_simulation.png Graphic file (type bmp)
 File: ../Figures/arm_w_calibration_interaction.png Graphic file (type bmp)
 <../Figures/arm_w_calibration_interaction.png>
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 670.
+(Font)              <10.95> on input line 638.
 
 
-[36]
+[37]
 File: ../Figures/arm_w_dynamic_dist.png Graphic file (type bmp)
 <../Figures/arm_w_dynamic_dist.png>
  (../Tables/panel_stats.tex) (../Tables/panel_tf_stats.tex)
 
-[37]
+[38]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
@@ -648,15 +630,15 @@ File: ../Figures/panel_qr_prediction_for_Armenia.png Graphic file (type bmp)
 <../Figures/panel_qr_prediction_for_Armenia.png>
 
 
-[38]
-
-LaTeX Warning: Text page 39 contains only floats.
-
-
-
 [39]
 
+LaTeX Warning: Text page 40 contains only floats.
+
+
+
 [40]
+
+[41]
 File: ../Figures/arm_position_on_scatter.png Graphic file (type bmp)
 <../Figures/arm_position_on_scatter.png>
  (../Tables/local_coeffs.tex
@@ -757,37 +739,42 @@ Overfull \hbox (1.70976pt too wide) in paragraph at lines 37--37
 )
 File: ../Figures/arm_qr_f_fits.png Graphic file (type bmp)
 <../Figures/arm_qr_f_fits.png>
-
-
-LaTeX Warning: Reference `fig:arm_qr_gdp_dist' on page 41 undefined on input line 743.
-
 File: ../Figures/arm_qr_gdp_kde_dist.png Graphic file (type bmp)
 <../Figures/arm_qr_gdp_kde_dist.png>
+File: ../Figures/arm_FCyI_f_coeff_quantiles.png Graphic file (type bmp)
+<../Figures/arm_FCyI_f_coeff_quantiles.png>
 
-
-[41]
 
 [42]
+File: ../Figures/panel_FCyI_coeff_quantiles.png Graphic file (type bmp)
+<../Figures/panel_FCyI_coeff_quantiles.png>
+File: ../Figures/arm_qr_gdp_dist.png Graphic file (type bmp)
+<../Figures/arm_qr_gdp_dist.png>
+File: ../Figures/arm_FCI_f_coeff_quantiles.png Graphic file (type bmp)
+<../Figures/arm_FCI_f_coeff_quantiles.png>
+File: ../Figures/panel_FCI_coeff_quantiles.png Graphic file (type bmp)
+<../Figures/panel_FCI_coeff_quantiles.png>
 
-[43] (./version_3.aux)
+
+[43]
+
+[44]
+
+[45] (./version_3.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `version_3.out' has not changed.
-(rerunfilecheck)             Checksum: A8B04AC1D34CDFED9DD60AE8446D02A8;6378.
+(rerunfilecheck)             Checksum: 0202D30DCD3FBCD2698D2F3F68C399E3;6506.
  ) 
 Here is how much of TeX's memory you used:
- 12495 strings out of 473832
- 202460 string characters out of 5733158
- 631239 words of memory out of 5000000
- 35346 multiletter control sequences out of 15000+600000
+ 12539 strings out of 473832
+ 204362 string characters out of 5733158
+ 631364 words of memory out of 5000000
+ 35385 multiletter control sequences out of 15000+600000
  643909 words of font info for 105 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  72i,14n,79p,2061b,497s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on version_3.pdf (43 pages).
+Output written on version_3.pdf (45 pages).

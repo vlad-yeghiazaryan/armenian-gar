@@ -24,9 +24,9 @@
 \title{Measuring the systemic risk build-up and macroprudential policy impact in Armenian financial system: A Growth-at-Risk approach\thanks{This paper is the sole responsibility of its authors. The views expressed in this paper are ours and do not necessarily reflect the views of the Central Bank of Armenia.}}
 
 \author{
-Vladimir Yeghiazaryan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \texttt{vladimir.yeghizaryan@cba.am}}
-\and 
-Arthur Grigoryan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \texttt{arthur.grigoryan@cba.am}}
+    Vladimir Yeghiazaryan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \texttt{vladimir\_yeghiazaryan21@alumni.aua.am}} \and 
+    Arthur Grigoryan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \texttt{arthur.grigoryan@cba.am}} \and 
+    Ashot Sargsyan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \texttt{ashot.sargsyan@cba.am}}
 }
 
 
@@ -37,7 +37,6 @@ Arthur Grigoryan\thanks{Central Bank of Armenia, Yerevan, Armenia. Email: \textt
 \captionsetup{font=small}
 
 \maketitle
-
 \begin{abstract}
     In recent years, macroprudential policy has gained importance as a tool to handle cyclical and structural vulnerabilities in the financial system. These vulnerabilities, if left unmonitored, can amplify during periods of financial stress and pose significant risks to economic growth.
     This paper attempts to quantify these vulnerabilities and the effects of macroprudential policy on them through the use of an empirical growth-at-risk (GaR) framework. Using Bayesian quantile regression, we assess how systemic risks impact GDP growth and explore the potential costs and benefits of macroprudential policy on its growth distribution. Our findings are consistent with earlier studies suggesting that any policy measure introduces a trade-off between mitigating systemic risks and preserving median GDP growth.
@@ -94,7 +93,7 @@ The rest of the paper has the following structure. Section 2 provides an overvie
 \section{Literature review}
 
 
-\subsection{Growth-at-Risk framework}
+%\subsection{Growth-at-Risk framework}
 The Growth-at-Risk (GaR) framework, which has conceptual similarities with the Value-at-Risk (VaR) concept in finance, links the probability and severity of negative economic outcomes to pre-existing financial vulnerabilities \citep{imf_gar_2019}. Essentially, GaR captures the time lag between the accumulation of systemic risks and the materialization of losses. Unlike models focusing solely on expected outcomes, GaR accounts for the entire distribution of future output growth, particularly the tail of the distribution \citep{szabo2020}. In other words, the policymaker now has the entire distribution at hand, instead of single measure. This approach is crucial as systemic risks often behave non-linearly, especially during economic downturns.
 
 For the policymaker, it is a practical means of differentiating and quantifying potential risks before they manifest. In small open economies, for instance, external shocks propagate through the financial system more aggressively, leading to amplified negative effects \citep{esrb2021}. A case in point is Peru, where the impact of external shocks was found to be twice as large as that of internal factors, such as leverage \citep{imf_gar_2019}. While macroprudential policies cannot prevent the occurrence or magnitude of these crises, they can mitigate their impact through countercyclical measures \citep{esrb2021}. It is crucial for the policymaker both to know the potential magnitude of risk materialization and what impact on it can have the policy action from his side. GaR framework does an excellent job here giving answer to both questions.
@@ -363,46 +362,15 @@ As an alternative to the distance-to-tail approach, we consider the welfare func
 
 where $w$ is interpreted as the aversion to financial instability, while $\beta$ is a discount factor. This formulation considers both the median and the distance-to-tail, capturing the costs of macroprudential policy along with its benefits \citep{cecchetti_2021}. It is apparent from \autoref{eq:suarez_W}, that the optimal policy is subject to the choice of $w\in(0,\inf)$. This term includes the policymakers' appetite for risk, but also the probability of crisis. A higher value of w indicates that the policymaker is more sensitive to risks, while a value of zero would imply a complete disregard for the systemic risks in the economy. The calibration results indicate that the reasonable value of $w$ in Armenia is around 0.11\footnote{For detailed information on the calibration procedure, see \ref{appx:w_calibration}.}. The specific trade-off for the policymakers will depend on their tolerance for downside risks, but also the effectiveness of macroprudential policy \citep{esrb2021, suarez2022} \footnote{For details, please see \ref{appx:suarez}.}.
 
+\subsection{Addressing Endogeneity}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+As in many papers in the topic, the model in this paper faces the challenge of policy endogeneity. In other words, the expectations of economic growth may influence policy decisions, thus creating reverse causality that distorts our inference. This endogeneity adds bias to the coefficients that we estimate. The true effect of an exogenous change might be different from what was observed. Given that indicators such as the Credit to GDP gap have historically influenced macroprudential policy decisions, addressing this bias is essential. Additionally, closed-form regressions can not capture the nonlinear interactions between macroprudential policy and systemic risks, also exposing other coefficients to the endogeneity issue.
+In the paper, we address the issue of endogeneity using three complementary strategies.
+\begin{enumerate}
+    \item First, we treat MPI (Macroprudential policy index) by estimating non-systemic policy shocks by regressing MPI on systemic risks and then extracting the residual (the constant is added back in). This essentially acts as the subset of macroprudential policy decisions not driven by prevailing economic conditions. It ensures that MPI is uncorrelated with systemic risks.
+    \item Second, in the MCMC specification of the model, we estimate the coefficient of MPI as a nonlinear function of systemic risks. Thus, instead of looking at the subset of cases, this approach attempts to eliminate the bias by more closely modeling the relationship between policy decisions and risks. 
+    \item Finally, for both approaches above, we use priors derived from the more robust panel specification of the model. This mitigates the coefficient instability (offshoots) caused by endogeneity, under the assumption that country-specific biases are random, yet consistent across time, and follow a white noise process.
+\end{enumerate}
 
 
 
@@ -544,7 +512,7 @@ When comparing the results from both approaches, it is apparent that they provid
 
 \subsection{Policy simulation using the model results}
 As was discussed previously, the benefits of Macroprudential policy actions are twofold: first, they enhance the resilience of the system to future possible shocks, and second they have potential to moderate the cycle, that is - to impact the size of future shocks, by curbing risky lending, etc.
-To test the model we have constructed a conterfactual-like scenario for the next 20 quarters, assuming, that first half of it is a stable time and the second half is when the shock hits. At the beginning we follow the Suarez welfare approach, which taking into account current actual environment, suggests a liitle tightening of the policy . Then, 3 years later we assume the shock hits (we have constructed a COVID-19 like shock), and the policymaker releases the buffers (by the same amount).
+To test the model we have constructed a conterfactual-like scenario for the next 20 quarters, assuming, that first half of it is a stable time and the second half is when the shock hits. At the beginning we follow the Suarez welfare approach, which taking into account current actual environment, suggests a little tightening of the policy. Then, 3 years later we assume the shock hits (we have constructed a COVID-19 like shock), and the policymaker releases the buffers (by the same amount).
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.9\textwidth, angle=0]{../Figures/policy_simulation.png}    
@@ -573,7 +541,7 @@ Using the distance-to-tail approach, we estimate that a policy tightening thresh
 
 
 \section*{Acknowledgements}
-We extend our gratitude to Ashot Nanyan and Ashot Sargsyan, both from the Financial Stability Directorate, Central Bank of Armenia (CBA), for their valuable suggestions and constructive discussions. We also thank our colleagues, Tatul Hayruni, Gevorg Minasyan and Aleksandr Shirkhanyan from the Economic Research Department at the CBA for their insightful comments. Special thanks to Vladimir Asriyan for his feedback and ideas on enhancing the Growth-at-Risk framework.
+We extend our gratitude to Ashot Nanyan from the Financial Stability Directorate, Central Bank of Armenia (CBA), for his valuable suggestions and constructive discussions. We also thank our colleagues, Tatul Hayruni, Gevorg Minasyan and Aleksandr Shirkhanyan from the Economic Research Department at the CBA for their insightful comments. Special thanks to Vladimir Asriyan (Barcelona School of Economics) for his feedback and ideas on enhancing the Growth-at-Risk framework.
 
 \newpage
 
@@ -748,44 +716,53 @@ In \autoref{fig:frontier_boundary} we plot the estimated median and distance-to-
 	\label{fig:arm_qr_gdp_kde_dist}%
 \end{figure}
 
-% \section{Additional Figures}
-% \label{appx:additional_figures}
-% \begin{figure*}[!ht]
-% 	\centering 
-% 	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_FCyI_f_coeff_quantiles.png}	
-% 	\caption{Local model Financial Cycle Index coefficients. Estimated quantile regression coefficients for horizons 4, 8, and 12. The grey-shaded areas represent the 95\% confidence intervals. The dashed horizontal line presents the OLS coefficient.}
-% 	\label{fig:arm_FCyI_f_coeff_quantiles}%
-% \end{figure*}
-% \begin{figure*}[!ht]
+
+
+\section{Additional Figures}
+
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\setcounter{figure}{0}
+
+\renewcommand{\thetable}{\thesection.\arabic{table}}
+\setcounter{table}{0}
+
+\label{appx:additional_figures}
+\begin{figure*}[!ht]
+	\centering 
+	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_FCyI_f_coeff_quantiles.png}	
+	\caption{Local model Financial Cycle Index coefficients. Estimated quantile regression coefficients for horizons 4, 8, and 12. The grey-shaded areas represent the 95\% confidence intervals. The dashed horizontal line presents the OLS coefficient.}
+	\label{fig:arm_FCyI_f_coeff_quantiles}%
+\end{figure*}
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[width=1\textwidth, angle=0]{../Figures/panel_FCyI_coeff_quantiles.png}	
+	\caption{Panel model Financial Cycle Index coefficients.} 
+	\label{fig:panel_FCyI_coeff_quantiles}%
+\end{figure*}
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_qr_gdp_dist.png}	
+	\caption{Conditional GDP growth distribution of Armenia using skewed t-distribution fit for interpolation.}
+	\label{fig:arm_qr_gdp_dist}%
+\end{figure*}
+\begin{figure*}[!ht]
+	\centering 
+	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_FCI_f_coeff_quantiles.png}	
+	\caption{Local model Financial Conditions Index coefficients. Estimated quantile regression coefficients for horizons 4, 8, and 12. The grey-shaded areas represent the 95\% confidence intervals. The dashed horizontal line presents the OLS coefficient.}
+	\label{fig:arm_FCI_f_coeff_quantiles}%
+\end{figure*}
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[width=1\textwidth, angle=0]{../Figures/panel_FCI_coeff_quantiles.png}	
+	\caption{Panel model Financial Conditions Index coefficients.} 
+	\label{fig:panel_FCI_coeff_quantiles}%
+\end{figure*}
+% \begin{figure*}
 % 	\centering
-% 	\includegraphics[width=1\textwidth, angle=0]{../Figures/panel_FCyI_coeff_quantiles.png}	
-% 	\caption{Panel model Financial Cycle Index coefficients.} 
-% 	\label{fig:panel_FCyI_coeff_quantiles}%
+% 	\includegraphics[width=1\textwidth, angle=0]{Figures/arm_dist_decomp_diff_2024Q1.png}
+% 	\caption{Changes in systemic risks between 2023Q1 and 2024Q1 and their impact on the GDP growth.}
+% 	\label{fig:arm_dist_decomp_diff_2024Q1}%
 % \end{figure*}
-% \begin{figure*}[!ht]
-% 	\centering
-% 	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_qr_gdp_dist.png}	
-% 	\caption{Conditional GDP growth distribution of Armenia using skewed t-distribution fit for interpolation.}
-% 	\label{fig:arm_qr_gdp_dist}%
-% \end{figure*}
-% \begin{figure*}[!ht]
-% 	\centering 
-% 	\includegraphics[width=1\textwidth, angle=0]{../Figures/arm_FCI_f_coeff_quantiles.png}	
-% 	\caption{Local model Financial Conditions Index coefficients. Estimated quantile regression coefficients for horizons 4, 8, and 12. The grey-shaded areas represent the 95\% confidence intervals. The dashed horizontal line presents the OLS coefficient.}
-% 	\label{fig:arm_FCI_f_coeff_quantiles}%
-% \end{figure*}
-% \begin{figure*}[!ht]
-% 	\centering
-% 	\includegraphics[width=1\textwidth, angle=0]{../Figures/panel_FCI_coeff_quantiles.png}	
-% 	\caption{Panel model Financial Conditions Index coefficients.} 
-% 	\label{fig:panel_FCI_coeff_quantiles}%
-% \end{figure*}
-% % \begin{figure*}
-% % 	\centering
-% % 	\includegraphics[width=1\textwidth, angle=0]{Figures/arm_dist_decomp_diff_2024Q1.png}
-% % 	\caption{Changes in systemic risks between 2023Q1 and 2024Q1 and their impact on the GDP growth.}
-% % 	\label{fig:arm_dist_decomp_diff_2024Q1}%
-% % \end{figure*}
 % \begin{figure*}[!ht]
 % 	\centering
 % 	\includegraphics[width=1\textwidth, angle=0]{../Figures/country_cases_that_shape_the_boundary.png}	
