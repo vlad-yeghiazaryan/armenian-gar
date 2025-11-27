@@ -85,7 +85,7 @@ node_colors = {value: color_mapping[key] for key, values in (dict_groups|target_
 
 
 # importing data and perform pre-processing
-df_partition = pd.read_excel('../data/gar_main.xlsm', 'Data')
+df_partition = pd.read_excel('../data/gar_main.xlsm', sheet_name='Data')
 
 # interpolate and forward fill missing values
 for column in df_partition:
@@ -100,7 +100,6 @@ for column in df_partition:
 
 
 # In[4]:
-
 
 # imf partition output
 imf_data = pd.read_excel('../data/gar_V2.xlsm', 'Output_partitions')
@@ -216,6 +215,7 @@ cond_quant_series.head()
 # tsfit input data
 # mode: Free vs Fixed
 # fittype: 'T-skew' vs "Asymmetric T"
+# qsmooth: 'None' vs 'Median' vs 'Mean'
 latest_date = parser.parse('2020-03-31')
 fit_params = {
     'fittype': 'T-skew',
