@@ -1,16 +1,16 @@
-
-from datetime import datetime as date
-
 ## 3rd-party modules
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import scale
 import statsmodels.api as sm
 from statsmodels.api import QuantReg
 
-###############################################################################
-#Functions for step 2: quantfit
-###############################################################################
-def run_quantfit(data, target, horizon=4, model=QuantReg,
+# utils
+import warnings
+
+# Functions for step 2: quantfit
+def run_quantfit(data, target, horizon=4, model=QuantReg, 
+                 intercept=False, model_fit_args={},
                  quantlist=[0.1, 0.25, 0.5, 0.75, 0.9]):
     '''
     Main run function for step 2, quantfit.
@@ -23,56 +23,52 @@ def run_quantfit(data, target, horizon=4, model=QuantReg,
     and be executable as a regular Python function independent of Excel. **
     '''
     # ------------------------
-    # Create output dict
-    # ------------------------
-    dict_output_quantfit = dict()
-    
-    # ------------------------
     # Get parameters from
     # dict_input_quantfit
     # ------------------------
-    depvar  = target + '_hz_' + str(horizon)
     df_quantfit = data.copy()
-    regressors = df_quantfit.drop(columns=['date', depvar]).columns
-    df_quantfit.set_index('date', inplace=True)
+    index_cols = [c for c in ['country', 'date'] if c in df_quantfit.columns]
+    regressors = df_quantfit.drop(columns=[*index_cols, target]).columns
+    df_quantfit.set_index(index_cols, inplace=True)
 
     # ------------------------
     # Run the quantfit
     # ------------------------
-    qcoeff_all, dcond_quantiles_all, loco_all, exitcode = condquant(df_quantfit, depvar, regressors, horizon, quantlist, model)
+    qcoeff, cond_quant, local_prj = condquant(df_quantfit, target, regressors, horizon, quantlist, model, intercept, model_fit_args)
 
     # Add return values
-    dict_output_quantfit['qcoef']      = qcoeff_all
-    dict_output_quantfit['cond_quant'] = dcond_quantiles_all
-    dict_output_quantfit['localprj']    = loco_all
+    dict_output_quantfit = {}
+    dict_output_quantfit['qcoef']      = qcoeff
+    dict_output_quantfit['cond_quant'] = cond_quant
+    dict_output_quantfit['localprj']    = local_prj
     
     return dict_output_quantfit
 
-def condquant(dall,depvar,regressors_avl,horizon,ql, model):
-#if 1==1:    
+def condquant(dall, depvar, regressors_avl, horizon, ql, model, intercept, model_fit_args):
+#if 1==1:
     ql.sort()
     c_id_dict = {'horizon' : horizon}
     
     dall=dall.dropna(subset=regressors_avl)
     qrs = QuantileReg(depvar, indvars=regressors_avl,
-                      quantile_list=ql,
-                      data=dall,
-                      scaling=True, alpha=0.1)
+                      quantile_list=ql, data=dall,
+                      model=model, model_fit_args=model_fit_args,
+                      intercept=intercept, scaling=True, alpha=0.1)
 
     dc = qrs.coeff
     dc = add_id(dc,c_id_dict)
     dc.insert(0, 'variable', dc.index)
-        
+
         ## Without scaling: get the conditional quantiles 
     qru = QuantileReg(depvar, indvars=regressors_avl,
                       quantile_list=ql, data=dall,
-                      model=model,
-                      scaling=False, alpha=0.1)
+                      model=model, model_fit_args=model_fit_args,
+                      intercept=intercept, scaling=False, alpha=0.1)
 
         ## Run the predictions on the full frame (estimates can differ)
     dcq = qru.cond_quant
     dcq = add_id(dcq, c_id_dict)
-    
+
     ## Store the coefficients
     dci = qru.coeff; dci = add_id(dci, c_id_dict)
     dci.insert(0, 'variable', dci.index)
@@ -80,8 +76,7 @@ def condquant(dall,depvar,regressors_avl,horizon,ql, model):
     dc['coeff_noscale']=dci['coeff']
     dc=dc[['variable','horizon','quantile','coeff_scale','coeff_noscale','pval','lower','upper','R2_in_sample','normalized', 'Model']]
 
-    exitcode=1
-    return [dc,dcq,dci,exitcode]
+    return [dc,dcq,dci]
 
 def add_id(df, id_dict):
     """ Add identifiers variables to a pandas frame """
@@ -90,9 +85,7 @@ def add_id(df, id_dict):
         df.insert(v, var, id_dict[var])
     return(df)
 
-###############################################################################
 # Run the quantiles regressions
-###############################################################################
 class QuantileReg(object):
     """ 
     Fit a conditional regression model, via quantile regressions
@@ -120,9 +113,10 @@ class QuantileReg(object):
     __author = "Romain Lafarguette, IMF/MCM, rlafarguette@imf.org"
 
     ## Initializer
-    def __init__(self, depvar, indvars, quantile_list, data, model=QuantReg, scaling=True, alpha=0.1):
+    def __init__(self, depvar, indvars, quantile_list, data, model=QuantReg, model_fit_args={}, intercept=False, scaling=True, alpha=0.1):
 
         ## Parameters
+        self.intercept = intercept
         self.scaling = scaling
         self.alpha = alpha
         self.quantile_list = quantile_list
@@ -133,8 +127,9 @@ class QuantileReg(object):
         ## Data cleaning for the regression
         self.data = data.dropna(subset=[self.depvar], axis='index', how='any').copy()
 
-        # Model to use for quantile fitting
+        # Model to use for quantile fitting and its arguments
         self.QModel = model
+        self.model_fit_args = model_fit_args
         
         ## List of regressors
         self.regressors = [x for x in indvars if x in self.data.columns]
@@ -142,7 +137,9 @@ class QuantileReg(object):
         ## Depending on user input, scale the variables
         vars_reg = [self.depvar] + self.regressors
         if self.scaling == True:
-            self.data.loc[:, vars_reg] = scale(self.data.loc[:, vars_reg])
+            # add some random constant so it doesn't break
+            rand_const = 10
+            self.data.loc[:, vars_reg] = scale(self.data.loc[:, vars_reg]) + rand_const
         else:
             pass
         
@@ -160,18 +157,27 @@ class QuantileReg(object):
         qfit_dict = dict()
         for tau in self.quantile_list:
             y = self.data[self.depvar]
-            X = sm.add_constant(self.data[self.regressors])
-            qfit = self.QModel(y, X).fit(q=tau, maxiter=2000, p_tol=1e-05)
-
+            X = self.data[self.regressors]
+            if self.intercept:
+                X = sm.add_constant(X)
+            with warnings.catch_warnings(record=True) as w:
+                qfit = self.QModel(y, X).fit(q=tau, **self.model_fit_args)
+            w = np.NaN if len(w) == 0 else w[0]
+            qfit.warning = w
             qfit_dict[tau] = qfit
-        return(qfit_dict)
+        return qfit_dict
 
     def __mfit(self): 
         """ Estimate the fit for every quantiles """
         y = self.data[self.depvar]
-        X = sm.add_constant(self.data[self.regressors])
-        mfit = sm.OLS(y, X).fit()
-        return(mfit)
+        X = self.data[self.regressors]
+        if self.intercept:
+            X = sm.add_constant(X)
+        with warnings.catch_warnings(record=True) as w:
+            mfit = sm.OLS(y, X).fit()
+        w = np.NaN if len(w) == 0 else w[0]
+        mfit.warning = w
+        return mfit
 
     def __coeff(self):
         """ Extract the parameters and package them into pandas dataframe """
@@ -184,6 +190,7 @@ class QuantileReg(object):
             dp.insert(0, 'quantile', qfit.q) # Insert as a first column
             dp['R2_in_sample'] = qfit.prsquared
             dp['Model'] = qfit
+            dp['warning'] = qfit.warning
             ## Add the scaling information
             dp.loc[:,'normalized'] = self.scaling
             params = pd.concat([params, dp])
@@ -195,6 +202,8 @@ class QuantileReg(object):
         dmp = pd.concat(stats, axis=1); dmp.columns = stats_names
         dmp.insert(0, 'quantile', 'mean') # Insert as a first column
         dmp['R2_in_sample'] = mfit.rsquared
+        dmp['Model'] = mfit
+        dmp['warning'] = mfit.warning
         ## Add the scaling information
         dmp.loc[:,'normalized'] = self.scaling
         coeff = pd.concat([params, dmp], axis='index')
@@ -208,7 +217,9 @@ class QuantileReg(object):
         - Predictors have to be a pandas dataframe with regressors as columns
         """
         cond_quantiles = pd.DataFrame()
-        X = sm.add_constant(predictors[self.regressors])
+        X = predictors[self.regressors]
+        if self.intercept:
+            X = sm.add_constant(X)
                 
         for tau in self.quantile_list:
             qfit = self.qfit_dict[tau]
@@ -234,6 +245,4 @@ class QuantileReg(object):
         cq = pd.concat([cond_quantiles, dm])
 
         return(cq)
-
-
 

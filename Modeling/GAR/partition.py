@@ -10,301 +10,119 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.preprocessing import scale
 from sklearn.cross_decomposition import PLSRegression   ## PLS
 
-def retropolated_PCA(data, dict_groups, target, horizon=4, method_growth='cpd', retropolate='Yes'):
-    # partition input data
+def retropolated_PCA(data, groups_dict, target, horizon=4, method_growth='cpd', method='PCA', benchcutoff=0.2):
+    '''
+    Main run function for step 1, partition. Function to generate retropolated partition in a time period.
+    '''
+    # setup for input data partitioning
     first_valid = data.apply(lambda x: x.first_valid_index())
     last_valid = data.apply(lambda x: x.last_valid_index())
-    start_index = max([min([first_valid[value] for value in values]) for key, values in dict_groups.items()])
-    end_index = min([min([last_valid[value] for value in values]) for key, values in dict_groups.items()])
+    start_index = max([min([first_valid[value] for value in values]) for key, values in groups_dict.items()])
+    end_index = min([min([last_valid[value] for value in values]) for key, values in groups_dict.items()])
+    dall = data.set_index(data['date'], drop=False)
+    sdate = data['date'][start_index].to_pydatetime()
+    edate = data['date'][end_index].to_pydatetime()
 
-    dict_input_partition = {
-        'sdate': data['date'][start_index].to_pydatetime(),
-        'edate': data['date'][end_index].to_pydatetime(), 
-        'method': 'PCA',
-        'pcutoff': 0.2,
-        'method_growth':method_growth,
-        'retropolate': retropolate,
-        'PLS_target': None,
-        'target':target,
-        'horizon':horizon
-    }
-    return run_partition(dict_input_partition, dict_groups, data)
-
-def run_partition(dict_input_partition, dict_groups, df_partition):
-    '''
-    Main run function for step 1, partition.
-
-    Takes in as arguments a dict for input parameters
-    and a df for data. Outputs a dict for output parameters.
-
-    Does partitioning and returns a dict of output parameters.
-    ** This function should be independent of any Excel input/output
-    and be executable as a regular Python function independent of Excel. **
-    '''
-    # ------------------------
-    # Create DataFrame for log
-    # ------------------------
-    log_frame=pd.DataFrame(columns=['Time','Action'])
-
-    # ------------------------
-    # Create output dict
-    # ------------------------
-    dict_output_partition = dict()
-
-    # ------------------------
-    # Get parameters from
-    # dict_input_partition
-    # ------------------------
-    sdate   = dict_input_partition['sdate']
-    edate   = dict_input_partition['edate']
-    horizon = dict_input_partition['horizon']
-    tdep    = dict_input_partition['target']+'_hz_'+str(horizon)
-    df_partition  = df_partition.set_index(df_partition['date'], drop=False)
-    method=dict_input_partition['method']
-    benchcutoff = dict_input_partition['pcutoff']
-    rgdp =  dict_input_partition['target'] # column name for real GDP
-    method_growth = dict_input_partition['method_growth']
-    PLStarget=dict_input_partition['PLS_target']
-    
     # ------------------------
     # Run the partition
     # ------------------------
-    retroframe, retroload, logretro, exitcode = partition_retro(dall=df_partition, groups_dict=dict_groups, tdep=tdep, rgdp=rgdp, method_growth=method_growth, horizon=horizon, method=method, sdate=sdate, edate=edate, benchcutoff=benchcutoff,PLStarget=PLStarget)
-    log_frame = pd.concat([log_frame, logretro])
+    # Some data treatment for missing data at the end
+    # dall = dall.fillna(method='ffill').copy()
+    dall = dall[(dall['date']>=sdate) & (dall['date']<=edate)]
+    
+    if (horizon < 4) and (method_growth=='yoy'):
+        dall = dall.iloc[4-horizon-1:]
+        sdate = dall.index.values[0]
+
+    # Using dependent variable as benchmark, although it is an extra copy, the code for benchmark is written for accepting any bench mark variable, and keeping this will give the flexibility for futrue using other variables.
+    bench='benchvar'
+    dall[bench] = dall[target]
+
+    # Generating all cutoffs in the period, sorted from latest to earliest
+    [cutoffs,complete_group] = gen_cutoff(dall=dall, groups_dict=groups_dict,startdate=sdate, enddate=edate)
+
+    if (cutoffs==-1):
+        raise Exception("In the given time period some groups are completely empty. No feasible partition can be made.")
+    if len(cutoffs)==0:
+        raise Exception("No data in the cutoff period")
+
+    # Generating the parition for the latest cutoff            
+    [dpr, retroload] = p_cutoff(dall, groups_dict,cutoffs[0], bench, method, benchcutoff, None, False)
+    for i in range(1,len(cutoffs)):
+        [dpn, dln] = p_cutoff(dall,groups_dict,cutoffs[i],bench,method, benchcutoff, None, False)    
+        dpr = retropolation(dfearly=dpn, dflate=dpr, complete_early=complete_group[i],groups_dict=groups_dict)
+    retroload['cutoff'] = sdate
+    if method=='PLS':
+        retroload=retroload[['variable','cutoff','loadings','group','vip']]
+    else:
+        retroload=retroload[['variable','cutoff','loadings','group','variance_ratio']]
+        
+    # Compute the zscore for the final frame to makes them consistent
+    group_vars = [x for x in groups_dict.keys()]
+    for group in group_vars:
+        dpr[group] = zscore(dpr[group])
+
+    dpr.index.name=None
+    dall.index.name=None
+    retroframe = dpr.merge(dall[['date', target]], on=['date'], how='left')
+    retroframe.index=retroframe['date']
+    retroframe.index.name=None
     retroframe.reset_index(drop=True, inplace=True)
-    return retroframe, retroload, logretro
+    
+    return retroframe, retroload
 
 # Zscore correction
 def zscore(series):
     return((series - series.mean())/series.std(ddof=0))
 
 ###############################################################################
-#Function to generate retropolated partition in a time period
-###############################################################################
-def partition_retro(**kwargs):
-
-    #dall="NA",groups_dict={},tdep="NA",bench='NA',rgdp='NA', horizon=4, method='LDA',sdate=date(1,1,1),edate=date(9999,12,30), benchcutoff=0.30, saveim=False):
-    if 'dall' in kwargs:
-        dall=kwargs['dall']
-    else:
-        dall=        print('Error! No data imported')
-    
-    if 'groups_dict' in kwargs:
-        groups_dict=kwargs['groups_dict']
-    else:
-        groups_dict={}
-        print('Warning :group dict not specified')
-        
-    if 'tdep' in kwargs:
-        tdep=kwargs['tdep']
-    else:
-        tdep='NA'
-           
-    if 'rgdp' in kwargs:
-        rgdp=kwargs['rgdp']
-    else:
-        rgdp='NA'
-        print('Warning :real gdp not specified')
-    
-    if 'method_growth' in kwargs:
-        method_growth=kwargs['method_growth']
-    else:
-        method_growth='cpd' #'yoy'
-        
-    if 'horizon' in kwargs:
-        horizon=kwargs['horizon']
-    else:
-        horizon=4
-        print('Warning :horizon not specified')
-    
-    if 'method' in kwargs:
-        method=kwargs['method']
-    else:
-        method='LDA'
-        print('Warning :method not specified, using LDA')
-        
-    if 'sdate' in kwargs:
-        sdate=kwargs['sdate']
-    else:
-        sdate=date(1,1,1)
-        print('Warning : start date specified')
-    
-    if 'edate' in kwargs:
-        edate=kwargs['edate']
-    else:
-        edate=date(9999,12,30)
-        print('Warning : end date specified')
-        
-    if 'benchcutoff' in kwargs:
-        benchcutoff=kwargs['benchcutoff']
-    else:
-        benchcutoff=0.3        
-        print('Warning : bench mark cutoff not specified')
-        
-    if 'PLStarget' in kwargs:
-        PLStarget=kwargs['PLStarget']
-    else:
-        PLStarget=None
-        
-    if 'saveim' in kwargs:
-        saveim=kwargs['saveim']
-    else:
-        saveim=False        
-      
-## Some data treatment for peru (I have some missing data at the end...)
-    log_frame=pd.DataFrame(columns=['Time','Action'])
-    dall = dall.fillna(method='ffill').copy()
-    dall = dall[(dall['date']>=sdate) & (dall['date']<=edate)]
-    
-## Calculating the growth
-    dall['dummygrp']=1    
-    if method_growth=='cpd':
-        dall.loc[:,tdep] = dall.groupby(['dummygrp'])[rgdp].apply(cum_gr,horizon=horizon)
-    elif method_growth=='yoy':
-        dall.loc[:,tdep] = dall.groupby(['dummygrp'])[rgdp].apply(yoy_gr,horizon=horizon)
-        if horizon<4:
-            dall = dall.iloc[4-horizon-1:]
-            sdate=dall.index.values[0]
-    elif method_growth=='level':
-        dall.loc[:,tdep] = dall.groupby(['dummygrp'])[rgdp].shift(-horizon)
-    else:
-        # Assume data provided in the data sheet
-        pass
-
-## Using dependent variable as benchmark, although it is an extra copy, the code for benchmark is
-## written for accepting any bench mark variable, and keeping this will give the flexibility for
-## futrue using other variables.
-    bench='benchvar'
-    dall[bench]=dall[tdep]
-
-## Generating all cutoffs in the period, sorted from latest to earliest
-    [cutoffs,complete_group]=gen_cutoff(dall=dall,groups_dict=groups_dict,startdate=sdate,enddate=edate)
-
-    if (cutoffs==-1):
-        tn=date.now().strftime('%Y-%m-%d %H:%M:%S')
-        action="In the given time period some groups are complete empty. No feasible partition can be made."
-        log = pd.Series({'Time': tn, 'Action': action})
-        log_frame = pd.concat([log_frame, log])
-        return dall.head(),dall.head(),log_frame,-1
-
-    if len(cutoffs)==0:
-        tn=date.now().strftime('%Y-%m-%d %H:%M:%S')
-        action="No data in the cutoff period"
-        log = pd.Series({'Time': tn, 'Action': action})
-        log_frame = pd.concat([log_frame, log])
-        return dall.head(),dall.head(),log_frame,-1
-
-## Generating the parition for the latest cutoff            
-    [dp1,dl]=p_cutoff(dall,groups_dict,cutoffs[0],bench,method, benchcutoff, PLStarget, saveim=saveim)
-    
-    dpo=dp1
-
-    for i in range(1,len(cutoffs)):
-
-        [dpn,dln]=p_cutoff(dall,groups_dict,cutoffs[i],bench,method, benchcutoff, PLStarget, saveim=saveim)    
-
-        dpr=retropolate(dfearly=dpn,dflate=dpo,complete_early=complete_group[i],groups_dict=groups_dict)
-
-
-        dpo=dpr.copy()
-        tn=date.now().strftime('%Y-%m-%d %H:%M:%S')
-        retrovar=" "
-        for e in groups_dict:
-            if e not in complete_group[i]:
-                retrovar+=e+", "
-        action="Retroplating for "  + retrovar
-        log = pd.Series({'Time': tn, 'Action': action})
-        log_frame = pd.concat([log_frame, log])
-    
-    dl['cutoff']=sdate
-    if method=='PLS':
-        dl=dl[['variable','cutoff','loadings','group','vip']]
-    else:
-        dl=dl[['variable','cutoff','loadings','group','variance_ratio']]
-        
-## Compute the zscore for the final frame to makes them consistent
-    group_vars = [x for x in groups_dict.keys()]
-    for group in group_vars:
-        dpo[group] = zscore(dpo[group])
-
-    dpo.index.name=None
-    dall.index.name=None
-    dretro_final = dpo .merge(dall[['date',tdep]], on=['date'], how='left')
-    dretro_final.index=dretro_final['date']
-    dretro_final.index.name=None
-
- 
-    tn=date.now().strftime('%Y-%m-%d %H:%M:%S')
-    action="Retroplating successfully finished." 
-    log = pd.Series({'Time': tn, 'Action': action})
-    log_frame = pd.concat([log_frame, log])
-
-    if 'country' in dretro_final.columns:
-        dretro_final.drop(columns='country', inplace=True)
-    
-    return dretro_final,dl,log_frame,1
-
-###############################################################################
 # Given two frame of signle country retroplate late frame to early frame, 
 # return the retroplated frame
-def retropolate(dfearly,dflate,complete_early,groups_dict):
+def retropolation(dfearly, dflate, complete_early, groups_dict):
 ###############################################################################
-
-    ###########################
-    ###TODO Remove country#####
-    dfearly['country']=0
-    dflate['country']=0
-    dfearly.index.name=None
-    dflate.index.name=None
-    ###########################
-    #dload = pd.read_excel(gv.final_data_dir + '/Partitions_late.xlsx',
-    #                    sheetname='Loadings') 
-
-    ## Select the data of interest
-    ## This part can be removed as it shoud be done outside of the function.
-    group_vars = [x for x in groups_dict.keys()]
-    all_vars = ['country', 'date'] + group_vars
+    # Select the data of interest
+    # This part can be removed as it shoud be done outside of the function.
+    group_vars = list(groups_dict.keys())
+    all_vars = ['date'] + group_vars
 
     de = dfearly.loc[:,all_vars].copy()
     dl = dflate.loc[:,all_vars].copy()
-## Sort the frames
-    de = dfearly.sort_values(by=['country', 'date'], ascending=[1,1])
-    dl = dflate.sort_values(by=['country', 'date'], ascending=[1,1])
 
+    # Sort the frames
+    de = dfearly.sort_values(by=['date'], ascending=True)
+    dl = dflate.sort_values(by=['date'], ascending=True)
 
-# For every country, compute the reverse growth rate based on early data
-###############################################################################
-## Compute the reverse delta (from future to now, data inverted)
+    # For every country, compute the reverse growth rate based on early data
+    ###############################################################################
+    # Compute the reverse delta (from future to now, data inverted)
     for pvar in group_vars:
         rgr_n = '{}_rgr'.format(pvar)
 
-    ## Need to normalize: compute the zscore, per country 
-        de[pvar] = de.groupby(['country'])[pvar].apply(zscore)   
-        dl[pvar] = dl.groupby(['country'])[pvar].apply(zscore)
+        # Need to normalize: compute the zscore, per country     
+        de[pvar] = zscore(de[pvar]) 
+        dl[pvar] = zscore(dl[pvar])
     
-    ## Compute the delta, per country (pay attention to the order, future second)
-        de[rgr_n] = de.groupby(['country'])[pvar].apply(lambda x: x - x.shift(-1))
-        dl[rgr_n] = dl.groupby(['country'])[pvar].apply(lambda x: x - x.shift(-1))     
+        # Compute the delta, per country (pay attention to the order, future second)
+        de[rgr_n] = (lambda x: x - x.shift(-1))(de[pvar])
+        dl[rgr_n] = lambda x: x - x.shift(-1)(dl[pvar])   
 
-###############################################################################
-# Index creation using the reverse delta
-## Dulani's trick: sum for small numbers, growth rate for large number !!
-###############################################################################
+    ###############################################################################
+    # Index creation using the reverse delta
+    # Dulani's trick: sum for small numbers, growth rate for large number !!
+    ###############################################################################
 
     # 1. Identify the missing dates from the late frame
     # dec = de.loc[de.country==pays,:]
     # dmc = dm.loc[dm.country==pays,:]
     # dlc = dl.loc[dl.country==pays,:]
 
-    ####### From late to middle
+    # From late to middle
     late_missing_dates = sorted(list(set(de.date) - set(dl.date)))
     late_start_date = min(dl.date)
     
-
     ## Isolate the middle frame without long time frame
     ef = de.loc[de.date < late_start_date, :]
     ef = ef.sort_values(by='date', ascending=0) # Reverse cum sum !!
-
 
     # 2. Compute the cumulative growth rate based only on the recent frame
     for pv in group_vars:
@@ -315,47 +133,33 @@ def retropolate(dfearly,dflate,complete_early,groups_dict):
 
     ## Retroplating for every group, only incomplete group will be updated.
     for group in group_vars:
-        
         start_val = dl.loc[dl['date'] == min(dl['date']),group].values[0]
         dng = pd.DataFrame(index=late_missing_dates, columns=['date'])
         dng['date'] = dng.index.values
         dng.index.name=None
-        dng['country'] = de['country'].values[0]
         dng = dng.sort_values(by='date', ascending=0)
-
-        
         gr_cum = '{}_cum_rgr'.format(group)
         dng_f = dng.merge(ef[['date', gr_cum]], on=['date'], how='left')
-        #dng_f[group] = dng_f[gr_cum] + start_val # Increment the value
-
-        #If group in the early frame is complete, no retroplation is needed.
-        #Use the value in early group
-
+        #If group in the early frame is complete, no retroplation is needed. Use the value in early group.
         if group in complete_early:
             dng_f[group]=ef[group].values
         else:
             dng_f[group] = dng_f[gr_cum] + start_val
-
-
         dng_f.index=dng_f['date'].values
         dng_f.index.name=None
         mgr_frames_list.append(dng_f)
         
-      
-    ## Merge the new groups into a early augmented frame
+    # Merge the new groups into a early augmented frame
     dea = mgr_frames_list[0]
     for frame in mgr_frames_list[1:]:
-        dea = pd.merge(dea, frame, on=['date', 'country'])
+        dea = pd.merge(dea, frame, on=['date'])
     dea.index=dea['date'].values
     dea.index.name=None
 
     ## Merge late, early augmented
-
     d_complete = pd.concat([dl[all_vars], dea[all_vars]],axis='index')
-    
-
-    d_complete=d_complete.sort_values(by=['country', 'date'])
-    dfearly=dfearly.sort_values(by=['country', 'date'])
+    d_complete=d_complete.sort_values(by=['date'])
+    dfearly=dfearly.sort_values(by=['date'])
     
     ## complete group fix
     for group in complete_early:
@@ -735,7 +539,6 @@ def pls_reduction(depvars, regvars, df):
     pls_series = PLS_DA(depvars, avl_regs, df).component
     return(pls_series)
 
-
 def num_days(dates_tuple):
     """ Return the number of days in a tuple """
     min_ = pd.to_datetime(min(dates_tuple))
@@ -916,16 +719,3 @@ class PLS_DA(object):
         dproj_mod = (dproj-mean_adj)/scale_adj
         
         return(dproj_mod)
-
-def cum_gr(series, horizon ,yearfreq=4): 
-    ## Compute the compound annualized quarterly growth rate over a certain horizon
-    cagr = ((series.shift(-horizon)/series)**(1/horizon))-1
-    ## Need to annualize it now
-    annual_cagr = ((1+cagr)**yearfreq) -1
-    return(100*annual_cagr)
-
-
-def yoy_gr(series, horizon, yearfreq=4): 
-    ## We assume that the growth rate is quarterly. In the future, rather than having +4, should use an index period
-    yoy_gr = (series.shift(-horizon)/series.shift(-horizon+yearfreq))-1
-    return(100*yoy_gr)

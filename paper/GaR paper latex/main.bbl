@@ -1,0 +1,280 @@
+\begin{thebibliography}{35}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Article
+\bibitem[{Adrian et~al.(2019)Adrian, Boyarchenko and Giannone}]{adrian_2019}
+\bibinfo{author}{Adrian, T.}, \bibinfo{author}{Boyarchenko, N.},
+  \bibinfo{author}{Giannone, D.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Vulnerable growth}.
+\newblock \bibinfo{journal}{American Economic Review} \bibinfo{volume}{109},
+  \bibinfo{pages}{1263–89}.
+\newblock \DOIprefix\doi{10.1257/aer.20161923}.
+%Type = Article
+\bibitem[{Aikman et~al.(2019)Aikman, Bridges, Hacioglu~Hoke, O’Neill and
+  Raja}]{aikman2019}
+\bibinfo{author}{Aikman, D.}, \bibinfo{author}{Bridges, J.},
+  \bibinfo{author}{Hacioglu~Hoke, S.}, \bibinfo{author}{O’Neill, C.},
+  \bibinfo{author}{Raja, A.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{{Credit, capital and crises: a GDP-at-Risk
+  approach}}.
+\newblock \bibinfo{journal}{Staff Working Papers} .
+%Type = Article
+\bibitem[{Alam et~al.(2019)Alam, Alter, Eiseman, Gelos, Kang, Narita, Nier and
+  Wang}]{alam2019}
+\bibinfo{author}{Alam, Z.}, \bibinfo{author}{Alter, A.},
+  \bibinfo{author}{Eiseman, J.}, \bibinfo{author}{Gelos, R.},
+  \bibinfo{author}{Kang, H.}, \bibinfo{author}{Narita, M.},
+  \bibinfo{author}{Nier, E.}, \bibinfo{author}{Wang, N.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Digging deeper--evidence on the effects of
+  macroprudential policies from a new database}.
+\newblock \bibinfo{journal}{IMF Working Papers} \bibinfo{volume}{19},
+  \bibinfo{pages}{1}.
+\newblock \DOIprefix\doi{10.5089/9781498302708.001}.
+%Type = Misc
+\bibitem[{BIS(2010)}]{basel2010}
+\bibinfo{author}{BIS}, \bibinfo{year}{2010}.
+\newblock \bibinfo{title}{Guidance for national authorities operating the
+  countercyclical capital buffer}.
+\newblock \bibinfo{howpublished}{Bank for International Settlements}.
+%Type = Misc
+\bibitem[{BIS(2024a)}]{CREDIT_GAPS}
+\bibinfo{author}{BIS}, \bibinfo{year}{2024}a.
+\newblock \bibinfo{title}{Credit-to-gdp gaps, bis ws\_credit\_gap $1.0$}.
+\newblock \URLprefix \url{https://data.bis.org/topics/CREDIT_GAPS/data}.
+  \bibinfo{note}{accessed on 28 June 2024}.
+%Type = Misc
+\bibitem[{BIS(2024b)}]{DSR}
+\bibinfo{author}{BIS}, \bibinfo{year}{2024}b.
+\newblock \bibinfo{title}{Debt service ratios, bis ws\_dsr $1.0$}.
+\newblock \URLprefix \url{https://data.bis.org/topics/DSR/data}.
+  \bibinfo{note}{accessed on 28 June 2024}.
+%Type = Misc
+\bibitem[{BIS(2024c)}]{CBPOL}
+\bibinfo{author}{BIS}, \bibinfo{year}{2024}c.
+\newblock \bibinfo{title}{Policy rates, bis ws\_cbpol $1.0$"}.
+\newblock \URLprefix \url{https://data.bis.org/topics/CBPOL/data}.
+  \bibinfo{note}{accessed on 30 June 2024}.
+%Type = Misc
+\bibitem[{BIS(2024d)}]{RPP}
+\bibinfo{author}{BIS}, \bibinfo{year}{2024}d.
+\newblock \bibinfo{title}{Residential property prices, bis ws\_spp $1.0$}.
+\newblock \URLprefix \url{https://data.bis.org/topics/RPP/data}.
+  \bibinfo{note}{accessed on 28 June 2024}.
+%Type = Article
+\bibitem[{Boar et~al.(2017)Boar, Gambacorta, Lombardo and Luiz
+  Pereira~da}]{boar_2017}
+\bibinfo{author}{Boar, C.}, \bibinfo{author}{Gambacorta, L.},
+  \bibinfo{author}{Lombardo, G.}, \bibinfo{author}{Luiz Pereira~da, S.},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{What are the effects of macroprudential policies on
+  macroeconomic performance}.
+\newblock \bibinfo{journal}{BIS Quarterly Review} .
+%Type = Article
+\bibitem[{Cardarelli et~al.(2011)Cardarelli, Elekdag and
+  Lall}]{Cardarelli_2011}
+\bibinfo{author}{Cardarelli, R.}, \bibinfo{author}{Elekdag, S.},
+  \bibinfo{author}{Lall, S.}, \bibinfo{year}{2011}.
+\newblock \bibinfo{title}{Financial stress and economic contractions}.
+\newblock \bibinfo{journal}{Journal of Financial Stability}
+  \bibinfo{volume}{7}, \bibinfo{pages}{78--97}.
+\newblock \DOIprefix\doi{10.1016/j.jfs.2010.01.005}.
+%Type = Misc
+\bibitem[{CBA(2024)}]{cba2024}
+\bibinfo{author}{CBA}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Statistics}.
+\newblock \URLprefix
+  \url{https://www.cba.am/en/SitePages/statintroduction.aspx}.
+  \bibinfo{note}{accessed on 28 June 2024}.
+%Type = Article
+\bibitem[{Cecchetti and Suarez(2021)}]{cecchetti_2021}
+\bibinfo{author}{Cecchetti, S.G.}, \bibinfo{author}{Suarez, J.},
+  \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{On the stance of macroprudential policy}.
+\newblock \bibinfo{journal}{SSRN Electronic Journal}
+  \DOIprefix\doi{10.2139/ssrn.3975941}.
+%Type = Techreport
+\bibitem[{ESRB(2018)}]{esrb2018}
+\bibinfo{author}{ESRB}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{A Review of Macroprudential Policy in the EU in
+  2017}.
+\newblock \bibinfo{type}{Technical Report}. European Systemic Risk Board.
+  \bibinfo{address}{Frankfurt a. M.}
+%Type = Techreport
+\bibitem[{ESRB(2019)}]{esrb2019}
+\bibinfo{author}{ESRB}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Features of a macroprudential stance: initial
+  considerations}.
+\newblock \bibinfo{type}{Technical Report}. European Systemic Risk Board.
+  \bibinfo{address}{Frankfurt a. M.}
+%Type = Techreport
+\bibitem[{ESRB(2021)}]{esrb2021}
+\bibinfo{author}{ESRB}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Report of the Expert Group on Macroprudential Stance
+  – Phase II (implementation)}.
+\newblock \bibinfo{type}{Technical Report}. European Systemic Risk Board.
+  \bibinfo{address}{Frankfurt a. M.}
+%Type = Techreport
+\bibitem[{ESRB(2024)}]{esrb2024}
+\bibinfo{author}{ESRB}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Improvements to the ESRB macroprudential stance
+  framework}.
+\newblock \bibinfo{type}{Technical Report}. European Systemic Risk Board.
+  \bibinfo{address}{Frankfurt a. M.}
+%Type = Article
+\bibitem[{Galati and Moessner(2013)}]{galati2013}
+\bibinfo{author}{Galati, G.}, \bibinfo{author}{Moessner, R.},
+  \bibinfo{year}{2013}.
+\newblock \bibinfo{title}{Macroprudential policy – a literature review}.
+\newblock \bibinfo{journal}{Journal of Economic Surveys} \bibinfo{volume}{27},
+  \bibinfo{pages}{846--878}.
+\newblock \DOIprefix\doi{10.1111/j.1467-6419.2012.00729.x}.
+%Type = Article
+\bibitem[{Galán(2020)}]{galan2020}
+\bibinfo{author}{Galán, J.E.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{The benefits are at the tail: Uncovering the impact
+  of macroprudential policy on growth-at-risk}.
+\newblock \bibinfo{journal}{Journal of Financial Stability} ,
+  \bibinfo{pages}{100831}\DOIprefix\doi{10.1016/j.jfs.2020.100831}.
+%Type = Article
+\bibitem[{Giot and Laurent(2003)}]{giot2003}
+\bibinfo{author}{Giot, P.}, \bibinfo{author}{Laurent, S.},
+  \bibinfo{year}{2003}.
+\newblock \bibinfo{title}{Value-at-risk for long and short trading positions}.
+\newblock \bibinfo{journal}{Journal of Applied Econometrics}
+  \bibinfo{volume}{18}, \bibinfo{pages}{641--663}.
+\newblock \DOIprefix\doi{10.1002/jae.710}.
+%Type = Techreport
+\bibitem[{Holl\'{o} et~al.(2012)Holl\'{o}, Kremer and Duca}]{hollo2012}
+\bibinfo{author}{Holl\'{o}, D.}, \bibinfo{author}{Kremer, M.},
+  \bibinfo{author}{Duca, M.L.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{CISS - a composite indicator of systemic stress in
+  the financial system}.
+\newblock \bibinfo{type}{ECB Working Paper} \bibinfo{number}{1426}. European
+  Central Bank (ECB). \bibinfo{address}{Frankfurt a. M.}
+%Type = Misc
+\bibitem[{IMF(2024)}]{ifs2024}
+\bibinfo{author}{IMF}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{International financial statistics}.
+%Type = Article
+\bibitem[{Jiménez et~al.(2017)Jiménez, Ongena, Peydró and
+  Saurina}]{jimnez2017}
+\bibinfo{author}{Jiménez, G.}, \bibinfo{author}{Ongena, S.},
+  \bibinfo{author}{Peydró, J.L.}, \bibinfo{author}{Saurina, J.},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Macroprudential policy, countercyclical bank capital
+  buffers, and credit supply: Evidence from the spanish dynamic provisioning
+  experiments}.
+\newblock \bibinfo{journal}{Journal of Political Economy}
+  \bibinfo{volume}{125}, \bibinfo{pages}{2126--2177}.
+\newblock \DOIprefix\doi{10.1086/694289}.
+%Type = Article
+\bibitem[{Òscar Jordà et~al.(2015)Òscar Jordà, Schularick and
+  Taylor}]{jorda2015}
+\bibinfo{author}{Òscar Jordà}, \bibinfo{author}{Schularick, M.},
+  \bibinfo{author}{Taylor, A.M.}, \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Leveraged bubbles}.
+\newblock \bibinfo{journal}{Journal of Monetary Economics}
+  \bibinfo{volume}{76}, \bibinfo{pages}{S1--S20}.
+\newblock \DOIprefix\doi{10.1016/j.jmoneco.2015.08.005}.
+%Type = Article
+\bibitem[{Kipriyanov(2022)}]{kipriyanov_2022}
+\bibinfo{author}{Kipriyanov, A.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Comparison of models for growth-at-risk forecasting}.
+\newblock \bibinfo{journal}{Russian journal of money and finance}
+  \bibinfo{volume}{81}, \bibinfo{pages}{23--45}.
+\newblock \DOIprefix\doi{10.31477/rjmf.202201.23}.
+%Type = Article
+\bibitem[{Koenker and Bassett(1978)}]{koenker_1978_regression}
+\bibinfo{author}{Koenker, R.}, \bibinfo{author}{Bassett, G.},
+  \bibinfo{year}{1978}.
+\newblock \bibinfo{title}{Regression quantiles}.
+\newblock \bibinfo{journal}{Econometrica} \bibinfo{volume}{46},
+  \bibinfo{pages}{33}.
+\newblock \DOIprefix\doi{10.2307/1913643}.
+%Type = Article
+\bibitem[{Koop and Korobilis(2013)}]{koop_2013}
+\bibinfo{author}{Koop, G.}, \bibinfo{author}{Korobilis, D.},
+  \bibinfo{year}{2013}.
+\newblock \bibinfo{title}{A new index of financial conditions}.
+\newblock \bibinfo{journal}{SSRN Electronic Journal}
+  \DOIprefix\doi{10.2139/ssrn.2374980}.
+%Type = Article
+\bibitem[{Mack(2021)}]{mack2021}
+\bibinfo{author}{Mack, S.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Never waste a good crisis: European banking
+  regulation in the pandemic}.
+\newblock \bibinfo{journal}{Policy Brief} .
+%Type = Misc
+\bibitem[{Navajas and Thegeya(2024)}]{fsi2024}
+\bibinfo{author}{Navajas, M.C.}, \bibinfo{author}{Thegeya, A.},
+  \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Financial soundness indicators and banking crises}.
+%Type = Article
+\bibitem[{Plašil et~al.(2014)Plašil, Seidler, Hlaváč and
+  Konecny}]{plasil2014}
+\bibinfo{author}{Plašil, M.}, \bibinfo{author}{Seidler, J.},
+  \bibinfo{author}{Hlaváč, P.}, \bibinfo{author}{Konecny, T.},
+  \bibinfo{year}{2014}.
+\newblock \bibinfo{title}{An indicator of the financial cycle in the czech
+  economy}.
+\newblock \bibinfo{journal}{Czech National Bank} , \bibinfo{pages}{118--127}.
+%Type = Article
+\bibitem[{Prasad et~al.(2019)Prasad, Elekdag, Jeasakul, Lafarguette, Alter,
+  Xiaochen~Feng and Wang}]{imf_gar_2019}
+\bibinfo{author}{Prasad, A.}, \bibinfo{author}{Elekdag, S.},
+  \bibinfo{author}{Jeasakul, P.}, \bibinfo{author}{Lafarguette, R.},
+  \bibinfo{author}{Alter, A.}, \bibinfo{author}{Xiaochen~Feng, A.},
+  \bibinfo{author}{Wang, C.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Growth at risk: Concept and application in imf
+  country surveillance}.
+\newblock \bibinfo{journal}{IMF Working Papers} \bibinfo{volume}{19},
+  \bibinfo{pages}{1}.
+\newblock \DOIprefix\doi{10.5089/9781484397015.001}.
+%Type = Article
+\bibitem[{Schmitz et~al.(2022)Schmitz, Posch, Strobl, Note and
+  Nationalbank}]{schmitz2022eu}
+\bibinfo{author}{Schmitz, S.W.}, \bibinfo{author}{Posch, M.},
+  \bibinfo{author}{Strobl, P.}, \bibinfo{author}{Note, S.P.},
+  \bibinfo{author}{Nationalbank, O.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{The eu macroprudential review should prioritize
+  removing regulatory overlaps and increasing the flexibility of the ccyb}.
+\newblock \bibinfo{journal}{SUERF Policy Note} .
+%Type = Article
+\bibitem[{Stojkov(2020)}]{stojkov2020}
+\bibinfo{author}{Stojkov, K.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Different approaches to implementing a
+  countercyclical capital buffer}.
+\newblock \bibinfo{journal}{Reserve Bank of Australia Bulletin} ,
+  \bibinfo{pages}{113--121}.
+%Type = Article
+\bibitem[{Suarez(2022)}]{suarez2022}
+\bibinfo{author}{Suarez, J.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Growth-at-risk and macroprudential policy design}.
+\newblock \bibinfo{journal}{Journal of Financial Stability}
+  \bibinfo{volume}{60}, \bibinfo{pages}{101008}.
+\newblock \DOIprefix\doi{10.1016/j.jfs.2022.101008}.
+%Type = Techreport
+\bibitem[{Szabo(2020)}]{szabo2020}
+\bibinfo{author}{Szabo, M.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{{Growth-at-Risk: Bayesian Approach}}.
+\newblock \bibinfo{type}{Working Papers} \bibinfo{number}{2020/3}. Czech
+  National Bank.
+%Type = Misc
+\bibitem[{World\;Bank(2024)}]{gem2024}
+\bibinfo{author}{World\;Bank}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Global economic monitor}.
+\newblock \URLprefix
+  \url{https://databank.worldbank.org/source/global-economic-monitor-(gem)}.
+  \bibinfo{note}{accessed on 28 June 2024}.
+
+\end{thebibliography}

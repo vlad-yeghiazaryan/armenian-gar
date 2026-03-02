@@ -1,7 +1,10 @@
 .DS_Store
 .ipynb_checkpoints
 *__pycache__
-.vscode
 .Rhistory
 .Rproj.user
 *.app
+.virtual_documents
+data/working_data
+*$*.docx
+*.pkl

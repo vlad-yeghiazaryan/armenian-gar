@@ -6,12 +6,57 @@ from scipy.stats import t, norm
 from scipy import interpolate
 from scipy.special import gamma
 from scipy.optimize import minimize
-import math 
+import math
 import warnings
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
+# Internal modules
+from .kernel import Weighted_kernel
+
 import matplotlib.pyplot as plt  
 from matplotlib.ticker import FormatStrFormatter
+
+def dist_fit(cond_quant, fitparam):
+  # T-skew fit
+  actual = cond_quant.pop('actual') if 'actual' in cond_quant else None
+  olsmean = cond_quant.pop('mean') if 'mean' in cond_quant else None
+  h = fitparam['mode']['bandwidth']
+  if fitparam['fittype']=='T-skew':
+      model_fit = tskew_fit(cond_quant, fitparam)
+      modx = model_fit['loc']
+      medx = tskew_ppf(0.5, df=model_fit['df'], loc=model_fit['loc'], scale=model_fit['scale'], skew=model_fit['skew'])
+      meanx = tskew_mean(df=model_fit['df'], loc=model_fit['loc'], scale=model_fit['scale'], skew=model_fit['skew'])
+      
+    # Asymmetric T-skew fit
+  elif fitparam['fittype']=='Asymmetric T':
+      model_fit = asymt_fit(cond_quant, fitparam, olsmean)
+      modx = model_fit['loc']
+      medx = asymt_ppf(0.5, alpha=model_fit['skew'], nu1=model_fit['kleft'], nu2=model_fit['kright'], mu=model_fit['loc'], sigma=model_fit['scale']) 
+      meanx = asymt_mean(alpha=model_fit['skew'], nu1=model_fit['kleft'], nu2=model_fit['kright'], mu=model_fit['loc'], sigma=model_fit['scale'])
+
+  # Kernel fit
+  elif fitparam['fittype']=='Kernel-based':
+    cond_quant_uncross = quantile_uncrossing(cond_quant)
+    model_fit = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+    model_fit.w_kernel_fit()
+    
+    # getting the kernel mode, median and mean
+    x = model_fit.q_values
+    ypdf = model_fit.w_kernel_pdf(x)
+    modx = x[np.argmax(ypdf)]
+    medx = model_fit.w_kernel_ppf(0.5)
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    
+  res = {
+    'olsmean': olsmean,
+    'actual': actual,
+    'cond_quant': cond_quant,
+    'model_fit': model_fit,
+    'modx': modx,
+    'medx': medx,
+    'meanx':meanx
+    }
+  return  res
 
 def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
     '''
@@ -24,20 +69,13 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
     ** This function should be independent of any Excel input/output
     and be executable as a regular Python function independent of Excel. **
     '''
-    # ------------------------
-    # Create output dict
-    # ------------------------
-    dict_output_tsfit = dict()
 
     # Param setup
     cond_quant = get_cond_quant(fitdate, data, qcoef, target, horizon, fitparam['qsmooth'], fitparam['qsmooth_period'])
 
     # Estimation
     res, cq, fig, fig2, dfpdf = gen_skewt(fitdate, fitparam, cond_quant, horizon)
-    if fitparam['fittype']=='Asymmetric T':
-        dfpdf=dfpdf[['AsymT_PDF_x','AsymT_CDF','AsymT_PDF_y']].round(decimals=5)
-    elif fitparam['fittype']=='T-skew':
-        dfpdf=dfpdf[['Tskew_PDF_x','Tskew_CDF','Tskew_PDF_y']].round(decimals=5)
+    dict_output_tsfit = {}
     dict_output_tsfit['result'] = res
     dict_output_tsfit['data']   = cq
     dict_output_tsfit['fig']    = fig
@@ -47,32 +85,38 @@ def run_tsfit(fitdate, fitparam, data, qcoef, target, horizon):
 
 def select_df_partition(fitdate, df, target, horizon, qsmooth='None', qsmooth_per=2):
     # Fitdat
-    depvar  = target + '_hz_' + str(horizon)
+    if 'date' not in df.columns:
+        raise Exception("No 'date' in columns.")
     df = df.copy()
-    df.set_index('date', inplace=True)
+    per = int(qsmooth_per)
+    index_cols = [c for c in ['date', 'country'] if c in df.columns]
+    df.set_index(index_cols, inplace=True)
+    df_subset = df[df.index.get_level_values('date') <= fitdate].reset_index('date')
+    empty_index = (len(df_subset.index.names) == 1) and (df_subset.index.name == None)
+    df_subset.index = np.ones(len(df_subset.index)) if empty_index else df_subset.index
+    df_subset.index.name = 'variable' if empty_index else df_subset.index.name
     if qsmooth=='None':
         try:
-            df_partition_fit = df.loc[fitdate]
+            df_partition_fit = df_subset.set_index('date', append=True).groupby(df_subset.index.names).apply(lambda x: x.loc[1].loc[fitdate].copy())
         except:
-            df_partition_fit = df.iloc[-1,:]
-            print('The latest date in the data will be used.')
-                           
-    elif qsmooth=='Median':
-        per = int(qsmooth_per)
-        df_partition_fit = df[df.index<=fitdate].tail(per).median()
-        
-    elif qsmooth=='Mean':        
-        per=int(qsmooth_per)
-        df_partition_fit = df[df.index<=fitdate].tail(per).mean()
+            df_partition_fit = df_subset.set_index('date', append=True).groupby(df_subset.index.names).apply(lambda x: x.loc[1].iloc[-1,:].copy())
+            print('The latest date in the data will be used.')      
     
-    df_partition_fit.drop(['date', depvar], inplace=True, errors='ignore')
-    df_partition_fit['const'] = 1
+    elif qsmooth=='Median':
+        df_subset = df_subset.drop(columns='date')
+        df_partition_fit = df_subset.groupby(df_subset.index.names).apply(lambda x: x.tail(per).median())
+ 
+    elif qsmooth=='Mean':
+        df_subset = df_subset.drop(columns='date')
+        df_partition_fit = df_subset.groupby(df_subset.index.names).apply(lambda x: x.tail(per).mean())
+    
+    df_partition_fit.drop(index_cols + [target], inplace=True, errors='ignore')
     df_partition_fit = df_partition_fit.sort_index()
     return df_partition_fit
 
 def get_cond_quant(fitdate, data, qcoef, target, horizon, qsmooth='None', qsmooth_per=2):
     df_partition_fit = select_df_partition(fitdate, data, target, horizon, qsmooth, qsmooth_per)
-    cond_quant = qcoef.groupby('quantile').apply(lambda x: df_partition_fit @ x.set_index('variable')['coeff_noscale'].sort_index())
+    cond_quant = qcoef.groupby('quantile').apply(lambda x: df_partition_fit @ x.set_index('variable')['coeff'].sort_index())
     return cond_quant.to_dict()
 
 def gen_skewt(fitdate, fitparam, cond_quant, horizon):
@@ -89,7 +133,7 @@ def gen_skewt(fitdate, fitparam, cond_quant, horizon):
         tsfit = tskew_fit(cond_quant,fitparam)
 
         # generating data for PDF and CDF
-        dfpdf = gen_PDF_and_CDF(tsfit)
+        dfpdf = gen_t_PDF_and_CDF(tsfit)
 
         # calc some variables
         xq5=tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) 
@@ -160,23 +204,89 @@ def gen_skewt(fitdate, fitparam, cond_quant, horizon):
             'Skewness': asymtfit['skew']
         }
         return res, cq, fig, fig2, dfpdf
+    elif fitparam['fittype']=='Kernel-based':
+        res, fig, fig2, dfpdf = gen_kernel_fit(cond_quant, fitparam, fitdate, horizon)
+        return res, cq, fig, fig2, dfpdf
 
-def gen_PDF_and_CDF(tsfit, x_list=None):
-    v_q5 = tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q40 = tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q60 = tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    v_q95 = tskew_ppf(0.95, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-    min_v = v_q5-abs(v_q5-v_q40)
-    max_v = v_q95+abs(v_q95-v_q60)
-    while tskew_cdf(min_v+1, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])>0.05:
-        min_v-=1
-    
+def gen_kernel_fit(cond_quant, fitparam, fitdate, horizon):
+    res, dfpdf = kernel_fit(cond_quant, fitparam, fitdate, horizon)
+
+    # plotting
+    fig, fig2 = plot_kernel_dist(fitdate, horizon, fitparam, res['kernel_model'], dfpdf)
+    return res, fig, fig2, dfpdf
+
+def kernel_fit(cond_quant, fitparam, fitdate, horizon, x_values=None):
+    # perform the kernel model fit
+    h = fitparam['mode']['bandwidth']
+    cond_quant_uncross = quantile_uncrossing(cond_quant)
+    kernel_model = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+    kernel_model.w_kernel_fit()
+    res, dfpdf = gen_kernel_values(fitdate, horizon, kernel_model, x_values)
+    return res, dfpdf
+
+def gen_kernel_values(fitdate, horizon, kernel_model, x_values=None):
+    # generating data for PDF and CDF
+    dfpdf = gen_kernel_PDF_and_CDF(kernel_model, x_values)
+
+    # calc some variables
+    x, ypdf, ycdf = dfpdf.values.T
+    xq5 = kernel_model.w_kernel_ppf(0.05)
+    xq10 = kernel_model.w_kernel_ppf(0.1)
+    medx = kernel_model.w_kernel_ppf(0.5)
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    modx = x[np.argmax(ypdf)]
+
+    # save the results
+    res = {
+        'Date of input': fitdate,
+        'Horizon forward': horizon,
+        'Conditional mode': modx,
+        'Conditional median': medx,
+        'Conditional mean': meanx,
+        'GaR5%': xq5,
+        'GaR10%': xq10,
+        'kernel_weights':kernel_model.w_hat,
+        'kernel_bandwidth':kernel_model.bandwidth,
+        'kernel_model':kernel_model
+    }
+    return res, dfpdf
+
+def gen_kernel_PDF_and_CDF(kernel_model, x=None):
+    if type(x)==type(None):
+        v_q1, v_q5, v_q40, v_q60, v_q95, v_q99 = kernel_model.w_kernel_ppf(np.array([0.01, 0.05, 0.4, 0.6, 0.95, 0.99]))
+        min_v = max(v_q5-abs(v_q5-v_q40), v_q1)
+        max_v = min(v_q95+abs(v_q95-v_q60), v_q99)
+        x = np.array([x for x in np.linspace(min_v,max_v,500)])
+    density_hat = kernel_model.w_kernel_pdf(x)
+    theta_hat = kernel_model.w_kernel_cdf(x)
+    dfpdf = pd.DataFrame({'PDF_x':x, 'PDF_y':density_hat,
+                          'CDF_y':theta_hat})
+    return dfpdf
+
+def gen_t_PDF_and_CDF(tsfit, x_list=None):
     if type(x_list)==type(None):
+        v_q5 = tskew_ppf(0.05, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q40 = tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q60 = tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        v_q95 = tskew_ppf(0.95, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
+        min_v = v_q5-abs(v_q5-v_q40)
+        max_v = v_q95+abs(v_q95-v_q60)
+        while tskew_cdf(min_v+1, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])>0.05:
+            min_v-=1
         x_list = [x for x in np.arange(min_v,max_v,0.05)]
     yvals = [tskew_pdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]    
     ycdf = [tskew_cdf(z, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew']) for z in x_list]
-    tmp_dic={'Tskew_PDF_x':x_list,'Tskew_PDF_y':yvals,'Tskew_CDF':ycdf}
+    tmp_dic={'PDF_x':x_list,'PDF_y':yvals,'CDF_y':ycdf}
     dfpdf = pd.DataFrame(tmp_dic)
+    return dfpdf
+
+def gen_PDF_and_CDF(model_fit, fittype, x_list=None, loc=None):
+    if fittype=='T-skew':
+        dfpdf = gen_t_PDF_and_CDF(model_fit, x_list)
+    elif fittype=='Asymmetric T':
+        dfpdf = gen_asymt_PDF_and_CDF(model_fit, loc, x_list)
+    elif fittype=='Kernel-based':
+        dfpdf = gen_kernel_PDF_and_CDF(model_fit, x_list)
     return dfpdf
 
 def tskew_ppf_vec(quantiles, tsfit):
@@ -197,7 +307,7 @@ def gen_asymt_PDF_and_CDF(asymtfit, loc, x_list=None):
     yvals= [asymt_pdf(z, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale']) for z in x_list]    
     ycdf = [asymt_cdf(z, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale']) for z in x_list]
     
-    tmp_dic = {'AsymT_PDF_x':x_list,'AsymT_PDF_y':yvals,'AsymT_CDF':ycdf}
+    tmp_dic = {'PDF_x':x_list,'PDF_y':yvals,'CDF_y':ycdf}
     dfpdf = pd.DataFrame(tmp_dic)
     return dfpdf
 
@@ -236,7 +346,7 @@ def plot_T_dist(fitdate, dfpdf, fitparam, tsfit, loc, horizon):
     meany=tskew_pdf(meanx, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
     
     if fitparam['plot_mode']:
-        ax.plot([modx,modx],[0,mody],'r-.')
+        ax.plot([modx, modx],[0,mody],'r-.')
         ax.annotate('Mode', xy=(modx, mody),xycoords='data',
                     xytext=(modx+x_inc, mody*1.2), textcoords='data',
                     arrowprops=dict(arrowstyle="->",
@@ -432,6 +542,131 @@ def plot_asymt_T_dist(fitdate, dfpdf, fitparam, asymtfit, loc, horizon):
     plt.close('all')
     return fig, fig2
 
+def plot_kernel_dist(fitdate, horizon, fitparam, kernel_model, dfpdf):
+    # setting plot inputs
+    x, ypdf, ycdf = dfpdf.values.T
+    xq5, xq10, xq40 = kernel_model.w_kernel_ppf(np.array([0.05, 0.1, 0.4]))
+    yq5, yq10 = kernel_model.w_kernel_pdf(np.array([xq5, xq10]))
+    ycq5, ycq10 = kernel_model.w_kernel_cdf(np.array([xq5, xq10]))
+    q5loc = np.argmin(np.abs(ycdf - 0.05))
+    x_inc = (xq40-xq5)/4
+    meanx = (x @ ypdf)/np.sum(ypdf)
+    meany = kernel_model.w_kernel_pdf(meanx)
+    meancy = kernel_model.w_kernel_cdf(meanx)
+    medx = kernel_model.w_kernel_ppf(0.5)
+    medy = kernel_model.w_kernel_pdf(medx)
+    modx = x[np.argmax(ypdf)]
+    mody = kernel_model.w_kernel_pdf(modx)
+    modcy = kernel_model.w_kernel_cdf(modx)
+
+    # plot text inputs
+    titlestr = "Kernel fit for "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+    lablestr = "Density "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+
+    # plotting
+    fig, ax = plt.subplots(1, 1, figsize=(20,10))
+    ax.set_ylim(0, 1.2 * max(ypdf))
+    ax.set_title(titlestr,fontsize=24)
+    ax.fill_between(x[:q5loc], 0, ypdf[:q5loc],  facecolor='red', interpolate=True)
+    ax.plot(x, ypdf,'b-',label=lablestr)
+
+    # adding mode to plot
+    if fitparam['plot_mode']:
+        ax.plot([modx, modx],[0,mody],'r-.')
+        ax.annotate('Mode', xy=(modx, mody),xycoords='data',
+                    xytext=(modx+x_inc, mody*1.2), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24)
+    
+    # adding median to plot
+    if fitparam['plot_median']:
+        ax.plot([medx,medx],[0,medy],'m-.')
+        if medx<modx:
+            sp=-x_inc
+        else:
+            sp=x_inc
+        ax.annotate('Median', xy=(medx, medy),xycoords='data',
+                    xytext=(medx+sp, mody*1.1), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24,)
+        
+    # adding mean to the plot
+    if fitparam['plot_mean']:
+        if meanx<modx:
+            sp=-x_inc
+        else:
+            sp=x_inc
+        ax.plot([meanx,meanx],[0,meany],'c-.')
+        ax.annotate('Mean', xy=(meanx, meany),xycoords='data',
+                    xytext=(meanx+sp, meany*1.1), textcoords='data',
+                    arrowprops=dict(arrowstyle="->",
+                    connectionstyle="arc3"),fontsize=24,)
+
+    # Show GaR 5%
+    ax.plot([xq5,xq5],[0,yq5],'k--')
+    
+    ax.annotate('GaR 5%', xy=(xq5, yq5), xycoords='data',
+                xytext=(xq5-x_inc, yq5*1.4), textcoords='data',
+                arrowprops=dict(arrowstyle="->",
+                                connectionstyle="angle3,angleA=90,angleB=0"),fontsize=24)
+    # Show GaR 10%
+    ax.plot([xq10,xq10],[0,yq10],'k--')
+    ax.annotate('GaR 10%', xy=(xq10, yq10), xycoords='data',
+                xytext=(xq10-x_inc, yq10*1.3), textcoords='data',
+                arrowprops=dict(arrowstyle="->",
+                connectionstyle="angle3,angleA=0,angleB=90"),fontsize=24)
+    
+    # plot formatting
+    ax.legend(fontsize=24)
+    ax.tick_params(labelsize=24)
+    plt.ylim(0, max(ypdf)*1.4)
+    plt.xlim(x[0],x[-1])
+    
+    # adding axis titles
+    plt.ylabel('Probability Density', fontsize=24)
+    plt.xlabel('GDP (compound annual growth rate)', fontsize=24)
+    
+    # Creating the CDF plot
+    fig2, ax2 = plt.subplots(1, 1, figsize=(20,10))
+
+    # plot text inputs
+    lablestr = "Cumulative probability "+fitdate.strftime('%m/%d/%Y')+" "+"growth rate"+" forward "+str(horizon)
+
+    # plotting
+    ax2.fill_between(x[:q5loc+1], 0, ycdf[:q5loc+1],  facecolor='red', interpolate=True)
+    ax2.plot([xq5,xq5],[0,ycq5],'k--')
+    ax2.plot([xq10,xq10],[0,ycq10],'k--')
+    ax2.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    
+    # adding mode, median and mean
+    if fitparam['plot_mode']:
+        ax2.plot([modx,modx],[0,modcy],'r-.')
+        ax2.plot([x[0],modx],[modcy,modcy],'r-.')
+        
+    if fitparam['plot_median']:
+        ax2.plot([medx,medx],[0,0.5],'m-.')
+        ax2.plot([x[0],medx],[0.5,0.5],'m-.')
+    
+    if fitparam['plot_mean']:
+        ax2.plot([meanx,meanx],[0,meancy],'c-.')
+        ax2.plot([x[0],meanx],[meancy,meancy],'c-.')
+    
+    # plot formatting
+    ax2.set_ylim(0, 1)
+    ax2.set_title(titlestr,fontsize=24)        
+    ax2.plot(x,ycdf,'b-',label=lablestr)
+    ax2.legend(fontsize=24,loc=2)
+    ax2.tick_params(labelsize=24)
+    plt.ylim(0, 1)
+    plt.xlim(x[0],x[-1])
+
+    # plot text inputs
+    plt.ylabel('Cumulative Probability', fontsize=24)
+    plt.xlabel('GDP(compound annual growth rate)', fontsize=24)
+
+    plt.close('all')
+    return fig, fig2
+
 #Probability density function of a TSkew distribution
 def tskew_pdf(x, df, loc, scale, skew):    
     """
@@ -537,8 +772,8 @@ def alpha_star_plain(alpha, nu1, nu2):
     return(top/bottom)
 
 ## To improve speed, vectorize the ancillary functions (used everywhere else)
-K = np.vectorize(K_plain, otypes=[np.float], cache=False)
-alpha_star = np.vectorize(alpha_star_plain, otypes=[np.float], cache=False)
+K = np.vectorize(K_plain, otypes=[np.float64], cache=False)
+alpha_star = np.vectorize(alpha_star_plain, otypes=[np.float64], cache=False)
 
 # Expectation of the Assymetric student t, cf. Zhu and Galbraith JoE 2010
 def asymt_mean(alpha=0.5, nu1=1, nu2=1, mu=0, sigma=1):
@@ -752,7 +987,7 @@ def tskew_distance(quantile_list, cond_quant,
         """ Function which only depends on a given tau """
         return(tskew_ppf(tau, df=df, loc=loc, scale=scale, skew=skew))
 
-    tskew_ppf_vectorized = np.vectorize(tskew_tau, otypes=[np.float])
+    tskew_ppf_vectorized = np.vectorize(tskew_tau, otypes=[np.float64])
     
     theoretical_quant = tskew_ppf_vectorized(quantile_list)  
 
@@ -793,7 +1028,6 @@ def tskew_fit(conditional_quantiles, fitparams):
     ######################
     if fitparams['skew_low']!='Free':
         pass
-    
 
     ## Interquartile range (proxy for volatility)
     try:
@@ -926,7 +1160,7 @@ def asymt_distance(quantile_list, cond_quant,
         """ Function which only depends on a given tau """
         return(asymt_ppf(tau, alpha=skew, nu1=kleft, nu2=kright, mu=loc, sigma=scale))
         #asymt_ppf(p, alpha=0.5, nu1=1, nu2=1, mu=0, sigma=1)
-    asymt_ppf_vectorized = np.vectorize(asymt_tau, otypes=[np.float])
+    asymt_ppf_vectorized = np.vectorize(asymt_tau, otypes=[np.float64])
     
     theoretical_quant = asymt_ppf_vectorized(quantile_list)  
 

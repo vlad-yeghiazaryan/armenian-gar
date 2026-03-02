@@ -9,7 +9,8 @@ from .tsfit import asymt_pdf
 from .tsfit import asymt_cdf
 from .tsfit import asymt_ppf
 from .tsfit import tskew_fit
-from .tsfit import asymt_fit, tskew_ppf_vec, gen_PDF_and_CDF, gen_asymt_PDF_and_CDF, asymt_ppf_vec, get_cond_quant
+from .tsfit import asymt_fit, tskew_ppf_vec, gen_t_PDF_and_CDF, gen_asymt_PDF_and_CDF, asymt_ppf_vec, get_cond_quant
+from .tsfit import quantile_uncrossing, Weighted_kernel, gen_kernel_values
 
 # Plotting
 import matplotlib.pyplot as plt
@@ -18,20 +19,10 @@ from math import log
 
 # Function for step 4: historical test
 def run_historical(dict_input_historical, data, qcoef):
-    '''
-    Main run function for step 2, quantfit.
-
-    Takes in as arguments a dict for input parameters
-    and a df for data. Outputs a dict for output parameters.
-
-    Does quantile fits and returns a dict of output parameters.
-    ** This function should be independent of any Excel input/output
-    and be executable as a regular Python function independent of Excel. **
-    '''
     # ------------------------
     # Create output dict
     # ------------------------
-    dict_output_historical = dict()
+    dict_output_historical = {}
     target = dict_input_historical['target']
     horizon = dict_input_historical['horizon']
     sdate=dict_input_historical['start_date']
@@ -40,7 +31,7 @@ def run_historical(dict_input_historical, data, qcoef):
     fitparam=dict_input_historical['fit_params']
 
     dates, realvalues, olsmeans, cond_quants = get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitparam)
-    figs, res, chartpacks = historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans)
+    figs, res, chartpacks = historical_gen(cond_quants, fitparam, realvalues, olsmeans, dates, horizon)
     df=pd.DataFrame(res, index=dates)
     cond_quants = pd.DataFrame(cond_quants, index=dates)
     dict_output_historical['figs'] = figs
@@ -51,8 +42,7 @@ def run_historical(dict_input_historical, data, qcoef):
 
 def get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitparam):
     # selected the dates for estimating conditional quantiles
-    depvar  = target + '_hz_' + str(horizon)
-    y = data.set_index('date')[depvar]
+    y = data.set_index('date')[target]
     dates = data['date'][(data['date']>=sdate) & (data['date']<=edate)]
     dates = dates.iloc[list(range(0,len(dates),time_inc))].values
     
@@ -75,7 +65,7 @@ def get_cond_quants(sdate, edate, time_inc, data, qcoef, target, horizon, fitpar
     fitted_dates = np.array(fitted_dates)
     return fitted_dates, realvalues, olsmeans, cond_quants
 
-def historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans):
+def historical_gen(cond_quants, fitparam, realvalues, olsmeans, dates, horizon):
     n = len(cond_quants)
     n_charts=10
     draws=list(range(n))
@@ -89,6 +79,9 @@ def historical_gen(cond_quants, fitparam, dates, realvalues, olsmeans):
         res, asfits = get_hist_asymt_dist(cond_quants, fitparam, olsmeans)
         figs, chartpacks = plot_hist_asymt_dist(dates, res, asfits, realvalues, draws)
         return figs, res, chartpacks
+    elif fitparam['fittype']=='Kernel-based':
+        res = get_hist_kernel_dist(cond_quants, fitparam, dates, horizon)
+        return {}, res, []
 
 def get_hist_T_dist(cond_quants, fitparam):
     res = []
@@ -101,7 +94,7 @@ def get_hist_T_dist(cond_quants, fitparam):
         tsfits.append(tsfit)
     
     # select a fixed x_list 
-    x_list = select_x_list(tsfits)
+    x_list = select_t_x_list(tsfits)
 
 # ToDo: !!! this code/for loop takes too long to run !!!
     for tsfit in tsfits:
@@ -112,7 +105,7 @@ def get_hist_T_dist(cond_quants, fitparam):
             'skew': tsfit['skew']
         }
         # store PDF and CDF
-        res_fit['dfpdf'] = gen_PDF_and_CDF(tsfit, x_list)
+        res_fit['dfpdf'] = gen_t_PDF_and_CDF(tsfit, x_list)
 
         # store values for different tails
         quantiles.append(0.05) if 0.05 not in quantiles else None
@@ -317,35 +310,75 @@ def plot_hist_asymt_dist(dates, res, asfits, realvalues, draws):
     plt.close('all')
     return figs, chartpacks
 
-def select_x_list(tsfits):
-    loclist = [tsfit['loc'] for tsfit in tsfits]
+def get_hist_kernel_dist(cond_quants, fitparam, dates, horizon):
+    res = []
+    kfits =[]
+    h = fitparam['mode']['bandwidth']
+
+    # perform fitting for  kernel model 
+    for cond_quant in cond_quants:
+        cond_quant_uncross = quantile_uncrossing(cond_quant)
+        kfit = Weighted_kernel(cond_quant_uncross, bandwidth=h)
+        kfit.w_kernel_fit()
+        kfits.append(kfit)
+    
+    # select a fixed x
+    x = select_kernel_x_list(kfits)
+
+    for kfit, fitdate in zip(kfits, dates):
+        res_fit, dfpdf = gen_kernel_values(fitdate, horizon, kfit, x)
+        res_fit['dfpdf'] = dfpdf
+        res.append(res_fit)
+    return res
+
+def get_quantiles(q, model, fittype):
+    if fittype=='T-skew':
+        v = []
+        for q_i in q:
+            v_i = tskew_ppf(q_i, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+            v.append(v_i)
+        v = np.array(v)
+    elif fittype=='Asymmetric T':
+        v = []
+        for q_i in q:
+            v_i = asymt_ppf(q_i, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+            v.append(v_i)
+        v = np.array(v)
+    elif fittype=='Kernel-based':
+        v = model.w_kernel_ppf(q)
+    return v
+
+def get_model_quantiles(model, fittype):
+    if fittype=='T-skew':
+        v_q15=tskew_ppf(0.15, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q40=tskew_ppf(0.4, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q60=tskew_ppf(0.6, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+        v_q85=tskew_ppf(0.85, df=model['df'], loc=model['loc'], scale=model['scale'], skew=model['skew'])
+    elif fittype=='Asymmetric T':
+        v_q15 = asymt_ppf(0.15, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q40 = asymt_ppf(0.4, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q60 = asymt_ppf(0.6, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+        v_q85 = asymt_ppf(0.85, alpha=model['skew'], nu1=model['kleft'], nu2=model['kright'], mu=model['loc'], sigma=model['scale'])
+    elif fittype=='Kernel-based':
+        v_q15, v_q40, v_q60, v_q85 = model.w_kernel_ppf(np.array([0.15, 0.4, 0.6, 0.85]))
+    return v_q15, v_q40, v_q60, v_q85
+
+def select_x_list(model_fits, fittypes, modx):
+     # extract the mode for each period
+    loclist = np.array(modx)
+    
+    # set initial values
     min_v = min(loclist)-8
     max_v = max(loclist)+8
-    for tsfit in tsfits:
-        v_q15=tskew_ppf(0.15, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q40=tskew_ppf(0.4, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q60=tskew_ppf(0.6, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-        v_q85=tskew_ppf(0.85, df=tsfit['df'], loc=tsfit['loc'], scale=tsfit['scale'], skew=tsfit['skew'])
-
+    
+    for fittype, modelfit in zip(fittypes, model_fits):
+        v_q15, v_q40, v_q60, v_q85 = get_model_quantiles(modelfit, fittype)
+        
         # increase the range if some quantiles are outside
         min_v = min(min_v,v_q15-abs(v_q15-v_q40))
         max_v = max(max_v,v_q85+abs(v_q85-v_q60))
-    x_list = [x for x in np.arange(min_v,max_v,0.05)]
+    x_list = np.array([x for x in np.linspace(min_v,max_v,500)])
     return x_list
 
-def select_asymt_x_list(asymtfits):
-    loclist = [asymtfit['loc'] for asymtfit in asymtfits]
-    min_v = min(loclist)-1.5
-    max_v = max(loclist)+1.5
 
-    for asymtfit in asymtfits:
-        v_q15 = asymt_ppf(0.15, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q40 = asymt_ppf(0.4, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q60 = asymt_ppf(0.6, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-        v_q85 = asymt_ppf(0.85, alpha=asymtfit['skew'], nu1=asymtfit['kleft'], nu2=asymtfit['kright'], mu=asymtfit['loc'], sigma=asymtfit['scale'])
-
-        # increase the range if some quantiles are outside
-        min_v = min(min_v,v_q15-abs(v_q15-v_q40))
-        max_v = max(max_v,v_q85+abs(v_q85-v_q60))
-    x_list = [x for x in np.arange(min_v,max_v,0.05)]
-    return x_list
+    

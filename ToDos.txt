@@ -1,0 +1,3 @@
+3. Create a dashboard for simulations.
+5. Propose an alternative utility/welfare function the GDP distribution and more compare it with the function proposed by Suarez. Frontier approach goes here.
+6. Improve the 3 year forecasting of the model by implementing a recursive state space forecasting algorithm for GaR.
